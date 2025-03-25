@@ -14,7 +14,6 @@ public partial class LoginPageView : ContentPage
 
     private async void SignUpButton_Clicked(object sender, EventArgs e)
     {
-        Thread.Sleep(500);
         await Navigation.PushAsync(new SignupPageView());
     }
 }

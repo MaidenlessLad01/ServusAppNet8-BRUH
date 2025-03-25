@@ -27,12 +27,14 @@
                         Opacity="0.2"/>
             </Border.Shadow>
             
-
+            <!--Comment ahhahaha-->
+            <!--For user info fields-->
             <VerticalStackLayout HorizontalOptions="Center">
                 <Label Text="Welcome to ServusApp" FontSize="20" HorizontalTextAlignment="Center" FontAttributes="Bold" TextColor="Black"/>
                 <Label Text="You're almost there!" FontSize="15" HorizontalTextAlignment="Center" Margin="0,0,0,10" TextColor="Black"/>
                 <Border HeightRequest="0.3" WidthRequest="1400"/>
                 <HorizontalStackLayout Padding="10" Spacing="10" HeightRequest="90" HorizontalOptions="Center">
+                    <!--first name-->
                     <Border BackgroundColor="#33FFA500" StrokeThickness="1" WidthRequest="120" Padding="10">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="8"/>
@@ -44,17 +46,20 @@
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="8"/>
                         </Border.StrokeShape>
+                        <!--last name-->
                         <Entry Placeholder="Last Name" 
                            Text="{Binding LName}" FontSize="15" ClearButtonVisibility="WhileEditing" TextColor="Black"/>
                     </Border>
                 </HorizontalStackLayout>
                 <Label Text="Birthdate" FontSize="14" HorizontalTextAlignment="Start" Margin="0,0,0,10" TextColor="Gray"/>
+                <!--datepicker for birthdate-->
                 <Border BackgroundColor="#33FFA500" StrokeThickness="1" HorizontalOptions="Center" WidthRequest="245"  Padding="10">
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="8"/>
                     </Border.StrokeShape>
                     <DatePicker TextColor="Black" HorizontalOptions="Center" MinimumDate="01/01/1000" MaximumDate="12/31/2022" Date="{Binding DoB}" />
                 </Border>
+                <!--picker for gender-->
                 <Label Text="Gender" FontSize="14" HorizontalTextAlignment="Start" Margin="0,10,0,10" TextColor="Gray"/>
                 <Border BackgroundColor="#33FFA500" StrokeThickness="1" HorizontalOptions="Center" WidthRequest="245"  Padding="10">
                     <Border.StrokeShape>

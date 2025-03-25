@@ -27,7 +27,7 @@ namespace ServusAppNet8.MVVM.ViewModels
         private string _fName;
         private string _lName;
         private string nameError;
-        private DateOnly _dob;
+        private DateTime _dob;
         private string passwordError;
         private string signUpError;
         private string emailOrPhoneError;
@@ -75,7 +75,7 @@ namespace ServusAppNet8.MVVM.ViewModels
             }
         }
         // Date of Birth property with data binding
-        public DateOnly DoB
+        public DateTime DoB
         {
             get => _dob;
             set
@@ -118,6 +118,7 @@ namespace ServusAppNet8.MVVM.ViewModels
                 OnPropertyChanged(nameof(ConfirmPassword));
             }
         }
+        //validate whether email or phone num is correct format
         private void ValidateEmailOrPhone()
         {
             if (string.IsNullOrEmpty(EmailOrPhone))
@@ -137,6 +138,7 @@ namespace ServusAppNet8.MVVM.ViewModels
                 EmailOrPhoneError = "Please enter a valid email or phone number.";
             }
         }
+        //among us sussy baka
         private void ValidateEmail()
         {
             if (!IsEmail(EmailOrPhone))
@@ -148,7 +150,7 @@ namespace ServusAppNet8.MVVM.ViewModels
                 EmailOrPhoneError = string.Empty;
             }
         }
-
+        //yeahhhh
         private void ValidatePhoneNumber()
         {
             if (!IsPhoneNumber(EmailOrPhone))

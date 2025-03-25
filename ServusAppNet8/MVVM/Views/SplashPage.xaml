@@ -8,6 +8,7 @@
              Title="SplashPage">
     <VerticalStackLayout VerticalOptions="Center" 
            HorizontalOptions="Center">
+        <!--mediaelement splashscreen code-->
         <toolkit:MediaElement 
                              x:Name="SplashVideo"
                              Source="c:\users\administrator\source\repos\servusappnet8\servusappnet8\resources\raw\background1.mp4"
