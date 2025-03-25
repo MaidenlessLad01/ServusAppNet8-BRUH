@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ServusAppNet8.MVVM.ViewModels"
              x:Class="ServusAppNet8.MVVM.Views.Home"
-             NavigationPage.HasNavigationBar="True"
+             NavigationPage.HasNavigationBar="False"
              Title="Home">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+    <!--<ContentPage.BindingContext>
+        <local:UserViewModel/>
+    </ContentPage.BindingContext>-->
+    <VerticalStackLayout Padding="20">
+        <Label Text="Profile Summary" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
+        <Label Text="First Name:"   FontSize="18" />
+        <Label Text="{Binding FName}" TextColor="White" FontSize="18" FontAttributes="Bold" />
+        <Label Text="Last Name:" FontSize="18" />
+        <Label Text="{Binding LName}" FontSize="18" FontAttributes="Bold" />
+        <Label Text="Birthdate:" FontSize="18" />
+        <Label Text="{Binding DoB, StringFormat='{}{0:MMMM dd, yyyy}'}" FontSize="18" FontAttributes="Bold" />
+        <Label Text="Gender:" FontSize="18" />
+        <Label Text="{Binding SelectedGender}" FontSize="18" FontAttributes="Bold" />
     </VerticalStackLayout>
 </ContentPage>

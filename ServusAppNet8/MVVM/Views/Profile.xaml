@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ServusAppNet8.MVVM.Views.Profile"
+             NavigationPage.HasNavigationBar="False"
+             Shell.NavBarIsVisible="False"
+             Title="Profile">
+    <Grid x:Name="MainGrid">
+        <!--Gradient Background-->
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1" >
+                <GradientStop Color="#FCD65F" Offset=".25"/>
+                <GradientStop Color="#FFA500" Offset=".5"/>
+                <GradientStop Color="#FF0000" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+         
+        <Border HorizontalOptions="Center" VerticalOptions="Center" Stroke="White" BackgroundColor="White" 
+                WidthRequest="300" Padding="10"  HeightRequest="460">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="15"/>
+            </Border.StrokeShape>
+            <Border.Shadow>
+                <Shadow Brush="Black"
+                        Offset="5,5"
+                        Radius="40"
+                        Opacity="0.2"/>
+            </Border.Shadow>
+            
+
+            <VerticalStackLayout HorizontalOptions="Center">
+                <Label Text="Welcome to ServusApp" FontSize="20" HorizontalTextAlignment="Center" FontAttributes="Bold" TextColor="Black"/>
+                <Label Text="You're almost there!" FontSize="15" HorizontalTextAlignment="Center" Margin="0,0,0,10" TextColor="Black"/>
+                <Border HeightRequest="0.3" WidthRequest="1400"/>
+                <HorizontalStackLayout Padding="10" Spacing="10" HeightRequest="90" HorizontalOptions="Center">
+                    <Border BackgroundColor="#33FFA500" StrokeThickness="1" WidthRequest="120" Padding="10">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8"/>
+                        </Border.StrokeShape>
+                        <Entry Placeholder="First Name" 
+                           Text="{Binding FName}" FontSize="15" ClearButtonVisibility="WhileEditing" TextColor="Black"/>
+                    </Border>
+                    <Border BackgroundColor="#33FFA500" StrokeThickness="1" WidthRequest="120"  Padding="10">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8"/>
+                        </Border.StrokeShape>
+                        <Entry Placeholder="Last Name" 
+                           Text="{Binding LName}" FontSize="15" ClearButtonVisibility="WhileEditing" TextColor="Black"/>
+                    </Border>
+                </HorizontalStackLayout>
+                <Label Text="Birthdate" FontSize="14" HorizontalTextAlignment="Start" Margin="0,0,0,10" TextColor="Gray"/>
+                <Border BackgroundColor="#33FFA500" StrokeThickness="1" HorizontalOptions="Center" WidthRequest="245"  Padding="10">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="8"/>
+                    </Border.StrokeShape>
+                    <DatePicker TextColor="Black" HorizontalOptions="Center" MinimumDate="01/01/1000" MaximumDate="12/31/2022" Date="{Binding DoB}" />
+                </Border>
+                <Label Text="Gender" FontSize="14" HorizontalTextAlignment="Start" Margin="0,10,0,10" TextColor="Gray"/>
+                <Border BackgroundColor="#33FFA500" StrokeThickness="1" HorizontalOptions="Center" WidthRequest="245"  Padding="10">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="8"/>
+                    </Border.StrokeShape>
+                    <Picker x:Name="Gender" HorizontalTextAlignment="Center" Title="Select Mental Illness" ItemsSource="{Binding users.Gender}" SelectedItem="{Binding SelectedGender}" TextColor="Black"/></Border>
+                <Button Text="Continue" Command="{Binding ContinueCommand}" WidthRequest="150"  Margin="0,30,0,-10" TextColor="White" BackgroundColor="OrangeRed"></Button>
+            </VerticalStackLayout>
+        </Border>
+            
+    </Grid>
+</ContentPage>
