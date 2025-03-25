@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit" 
+             NavigationPage.HasNavigationBar="False"
+             x:Class="ServusAppNet8.MVVM.Views.SplashPage"
+             Shell.NavBarIsVisible="False"
+             Title="SplashPage">
+    <VerticalStackLayout VerticalOptions="Center" 
+           HorizontalOptions="Center">
+        <toolkit:MediaElement 
+                             x:Name="SplashVideo"
+                             Source="c:\users\administrator\source\repos\servusappnet8\servusappnet8\resources\raw\background1.mp4"
+                             ShouldAutoPlay="True"
+                             ShouldLoopPlayback="False"
+                             ShouldShowPlaybackControls="False"
+                             Aspect="AspectFill"
+                             MediaEnded="SplashVideo_MediaEnded"/>
+    </VerticalStackLayout>
+</ContentPage>

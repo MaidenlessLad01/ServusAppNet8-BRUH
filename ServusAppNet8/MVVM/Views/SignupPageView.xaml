@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ServusAppNet8.MVVM.ViewModels"
+             xmlns:drawables="clr-namespace:ServusApp.Drawables"
+             x:Class="ServusAppNet8.MVVM.Views.SignupPageView"
+             NavigationPage.HasNavigationBar="False"
+             Shell.NavBarIsVisible="False"
+             Title="SignupPageView">
+    <ContentPage.BindingContext>
+        <local:UserViewModel/>
+    </ContentPage.BindingContext>
+    <Grid>
+        <!--Background Gradient-->
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1" >
+                <GradientStop Color="#F1FC5F" Offset="0"/>
+                <GradientStop Color="#FFA500" Offset=".5"/>
+                <GradientStop Color="#FF0000" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height=".1*"/>
+            <RowDefinition Height=".3*"/>
+            <RowDefinition Height=".6*"/>
+        </Grid.RowDefinitions>
+        <!--Logo-->
+        <Image WidthRequest="150" Margin="0,0,0,100" Grid.Row="1" HeightRequest="150" VerticalOptions="Center" HorizontalOptions="Center"
+           Source="logo.png"/>
+        <!--Wavey panel-->
+        <GraphicsView Grid.Row="2" VerticalOptions="End" HeightRequest="1500">
+            <GraphicsView.Drawable>
+                <drawables:WaveShape />
+            </GraphicsView.Drawable>
+        </GraphicsView>
+        <!--Back Button-->
+        <ImageButton x:Name="BackButton" Margin="20,20,0,0" WidthRequest="25" 
+           HeightRequest="25" HorizontalOptions="Start" Clicked="BackButton_Clicked" VerticalOptions="Center">
+            <ImageButton.Source>
+                <FontImageSource FontFamily="icon"
+                             Glyph="&#xe800;"
+                             Size="30"
+                             Color="Gray"/>
+            </ImageButton.Source>
+        </ImageButton>
+        <!--Bruhbruhbruh-->
+        <VerticalStackLayout 
+            Grid.Row="2"
+           VerticalOptions="Start"
+           Spacing="15"
+           Margin="20,90,20,0">
+            <Border BackgroundColor="#33FFA500" StrokeThickness="0" Padding="5">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="18"/>
+                </Border.StrokeShape>
+                <StackLayout>
+                    <!--entry for username-->
+                    <Entry Placeholder="Email or Phone Number" Text="{Binding EmailOrPhone, Mode=TwoWay}" FontSize="15" ClearButtonVisibility="WhileEditing" TextColor="Black"/>
+                    <Label Text="{Binding EmailOrPhoneError}" FontSize="10" TextColor="Red" />
+                </StackLayout>
+            </Border>
+
+            <Border BackgroundColor="#33FFA500" StrokeThickness="0" Padding="5">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="18"/>
+                </Border.StrokeShape>
+                <StackLayout>
+                    <!--entry for pass-->
+                    <Entry x:Name="PasswordEntry" Placeholder="Password" Text="{Binding Password, Mode=TwoWay}" IsPassword="True"
+                       ClearButtonVisibility="WhileEditing" FontSize="15" TextColor="Black"/>
+                    <!--Error label-->
+                    <Label Text="{Binding PasswordError}" FontSize="10" TextColor="Red" />
+                </StackLayout>
+            </Border>
+            <Border BackgroundColor="#33FFA500" StrokeThickness="0" Padding="5">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="18"/>
+                </Border.StrokeShape>
+                <Entry x:Name="ConfirmPasswordEntry" Text="{Binding ConfirmPassword, Mode=TwoWay}" Placeholder="Confirm Password" IsPassword="True"
+                   ClearButtonVisibility="WhileEditing" FontSize="15" TextColor="Black"/>
+            </Border>
+            <!--buttons for log in and signup-->
+            <Button Text="Sign Up" Command="{Binding RegisterButton}" Margin="0,10,0,-10" TextColor="White" BackgroundColor="OrangeRed"></Button>
+            <Label Text="or" HorizontalOptions="Center" TextColor="Gray"/>
+            <Button Text="Login" Margin="0,-10,0,0" BorderColor="Black" BorderWidth="1" BackgroundColor="#00F0F8FF"></Button>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ServusAppNet8.MVVM.Views.LandingPageView"             
+             Shell.NavBarIsVisible="False"
+             NavigationPage.HasNavigationBar="False"
+             Title="LandingPageView"
+             BackgroundImageSource="bg1.jpg"
+             >
+    <Grid x:Name="MainGrid">
+        <!--Gradient Background-->
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1" >
+                <GradientStop Color="#4CFCD65F" Offset=".25"/>
+                <GradientStop Color="#99FFA500" Offset=".5"/>
+                <GradientStop Color="#7FFF0000" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <!--Grid rows and columns-->
+        <Grid.RowDefinitions>
+            <RowDefinition Height=".6*"/>
+            <RowDefinition Height=".4*"/>
+        </Grid.RowDefinitions>
+        <Image x:Name="BGImage" Aspect="AspectFill"></Image>
+        <VerticalStackLayout Grid.Row="1" Margin="20">
+            <Label Text="Connect to the World"
+               FontAttributes="Bold"
+               Margin="0,0,0,5"
+               FontSize="27"
+               HorizontalTextAlignment="Start"/>
+            <!--sheeesh label-->
+            <Label Text="Connect and share memories with others around the world"
+               FontSize="14"
+               HorizontalTextAlignment="Start"/>
+
+            <!--Buttons-->
+            <Button x:Name="LoginButton"  Clicked="LoginButton_Clicked" Text="Log In" BackgroundColor="#FFFFFF" TextColor="OrangeRed" Margin="0,30,0,0" />
+            <Button x:Name="SignupButton" Clicked="SignupButton_Clicked"  Text="Sign Up" BorderColor="#FFFFFF" BackgroundColor="#00FFFFFF" TextColor="White" BorderWidth="1" Margin="0,10,0,0" />
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>
