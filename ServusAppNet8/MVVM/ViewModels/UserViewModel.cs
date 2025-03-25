@@ -172,7 +172,7 @@ namespace ServusAppNet8.MVVM.ViewModels
             }
 
             FakeDB.Users.Add(new User { FirstName = FName, LastName = LName, DoB = DoB, SelectedGender = SelectedGender });
-            DoB = DateOnly.FromDateTime(DoB.DateTime);
+            //DoB = DateOnly.FromDateTime(DoB.DateTime);
             await Application.Current.MainPage.Navigation.PushAsync(new Home
             {
                 BindingContext = this
