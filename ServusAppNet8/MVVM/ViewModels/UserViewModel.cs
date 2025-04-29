@@ -27,7 +27,7 @@ namespace ServusAppNet8.MVVM.ViewModels
         private string _fName;
         private string _lName;
         private string nameError;
-        private DateOnly _dob;
+        private DateTime _dob;
         private string passwordError;
         private string signUpError;
         private string emailOrPhoneError;
@@ -75,7 +75,7 @@ namespace ServusAppNet8.MVVM.ViewModels
             }
         }
         // Date of Birth property with data binding
-        public DateOnly DoB
+        public DateTime DoB
         {
             get => _dob;
             set
