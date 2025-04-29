@@ -9,6 +9,7 @@
         <local:UserViewModel/>
     </ContentPage.BindingContext>-->
     <VerticalStackLayout Padding="20">
+        <!--user info-->
         <Label Text="Profile Summary" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
         <Label Text="First Name:"   FontSize="18" />
         <Label Text="{Binding FName}" TextColor="White" FontSize="18" FontAttributes="Bold" />

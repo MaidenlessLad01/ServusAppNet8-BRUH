@@ -7,7 +7,7 @@ namespace ServusAppNet8
         public App()
         {
             InitializeComponent();
-            MainPage = new NavigationPage(new Profile());
+            MainPage = new NavigationPage(new SplashPage());
         }
     }
 }

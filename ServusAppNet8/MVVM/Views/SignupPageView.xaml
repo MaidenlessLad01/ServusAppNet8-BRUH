@@ -22,14 +22,14 @@
 
         <Grid.RowDefinitions>
             <RowDefinition Height=".1*"/>
-            <RowDefinition Height=".3*"/>
+            <RowDefinition Height=".25*"/>
             <RowDefinition Height=".6*"/>
         </Grid.RowDefinitions>
         <!--Logo-->
         <Image WidthRequest="150" Margin="0,0,0,100" Grid.Row="1" HeightRequest="150" VerticalOptions="Center" HorizontalOptions="Center"
            Source="logo.png"/>
         <!--Wavey panel-->
-        <GraphicsView Grid.Row="2" VerticalOptions="End" HeightRequest="1500">
+        <GraphicsView Grid.Row="2" VerticalOptions="End" HeightRequest="1600">
             <GraphicsView.Drawable>
                 <drawables:WaveShape />
             </GraphicsView.Drawable>
@@ -83,7 +83,7 @@
             <!--buttons for log in and signup-->
             <Button Text="Sign Up" Command="{Binding RegisterButton}" Margin="0,10,0,-10" TextColor="White" BackgroundColor="OrangeRed"></Button>
             <Label Text="or" HorizontalOptions="Center" TextColor="Gray"/>
-            <Button Text="Login" Margin="0,-10,0,0" BorderColor="Black" BorderWidth="1" BackgroundColor="#00F0F8FF"></Button>
+            <Button Text="Login" Clicked="Button_Clicked" Margin="0,-10,0,0" BorderColor="Black" BorderWidth="1" BackgroundColor="#00F0F8FF"></Button>
         </VerticalStackLayout>
     </Grid>
 </ContentPage>
