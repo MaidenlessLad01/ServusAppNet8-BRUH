@@ -11,6 +11,7 @@ using ServusAppNet8.Database;
 using ServusAppNet8.MVVM.Views;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using System.Runtime.CompilerServices;
 
 namespace ServusAppNet8.MVVM.ViewModels
 {
@@ -365,7 +366,7 @@ namespace ServusAppNet8.MVVM.ViewModels
         #endregion
         public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void OnPropertyChanged(string propertyName)
+        protected virtual void OnPropertyChanged([CallerMemberName]string propertyName = null)
         {
             
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
