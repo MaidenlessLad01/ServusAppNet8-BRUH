@@ -5,19 +5,146 @@
              x:Class="ServusAppNet8.MVVM.Views.Home"
              NavigationPage.HasNavigationBar="False"
              Title="Home">
-    <!--<ContentPage.BindingContext>
-        <local:UserViewModel/>
-    </ContentPage.BindingContext>-->
-    <VerticalStackLayout Padding="20">
-        <!--user info-->
-        <Label Text="Profile Summary" FontSize="24" FontAttributes="Bold" HorizontalOptions="Center" />
-        <Label Text="First Name:"   FontSize="18" />
-        <Label Text="{Binding FName}" TextColor="White" FontSize="18" FontAttributes="Bold" />
-        <Label Text="Last Name:" FontSize="18" />
-        <Label Text="{Binding LName}" FontSize="18" FontAttributes="Bold" />
-        <Label Text="Birthdate:" FontSize="18" />
-        <Label Text="{Binding DoB, StringFormat='{}{0:MMMM dd, yyyy}'}" FontSize="18" FontAttributes="Bold" />
-        <Label Text="Gender:" FontSize="18" />
-        <Label Text="{Binding SelectedGender}" FontSize="18" FontAttributes="Bold" />
-    </VerticalStackLayout>
+    <ScrollView>
+        <VerticalStackLayout Spacing="0" Padding="0">
+
+            <Grid Padding="10" ColumnSpacing="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Home Icon -->
+                <Image Source="home.png" Grid.Column="0" WidthRequest="30" HeightRequest="30" HorizontalOptions="Center" />
+
+                <!-- People Icon -->
+                <Image Source="addfriend.png" Grid.Column="1" WidthRequest="30" HeightRequest="30" HorizontalOptions="Center" />
+
+                <!-- TV/Watch Icon with Notification -->
+                <Grid Grid.Column="2">
+                    <Image Source="video.png" WidthRequest="30" HeightRequest="30" HorizontalOptions="Center" />
+                    <Frame BackgroundColor="Red"
+                       Padding="2"
+                       CornerRadius="10"
+                       HeightRequest="20"
+                       WidthRequest="20"
+                       IsClippedToBounds="True"
+                       TranslationX="10"
+                       TranslationY="-5"
+                       HasShadow="False"
+                       HorizontalOptions="End"
+                       VerticalOptions="Start">
+                        <Label Text="10" FontSize="10" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Frame>
+                </Grid>
+
+                <!-- Bell Icon -->
+                <Image Source="bell.png" Grid.Column="3" WidthRequest="30" HeightRequest="30" HorizontalOptions="Center" />
+
+                <!-- Store Icon -->
+                <Image Source="market.png" Grid.Column="4" WidthRequest="30" HeightRequest="30" HorizontalOptions="Center" />
+            </Grid>
+
+
+            <!-- Facebook Logo + Actions -->
+            <Grid BackgroundColor="White" Padding="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Image Source="facebook_logo.png" HeightRequest="30" Grid.Column="0" />
+
+                <HorizontalStackLayout Spacing="10" Grid.Column="2">
+                    <Image Source="icon_home.png" HeightRequest="25" />
+                    <Image Source="icon_people.png" HeightRequest="25" />
+                    <Image Source="icon_message.png" HeightRequest="25" />
+                    <Image Source="icon_notifications.png" HeightRequest="25" />
+                </HorizontalStackLayout>
+            </Grid>
+
+            <!-- What's on your mind -->
+            <Frame BorderColor="LightGray" CornerRadius="10" Margin="10,-30,10,10" Padding="10">
+                <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                    <Frame CornerRadius="25" WidthRequest="40" HeightRequest="40" Padding="0" HasShadow="False">
+                        <Image Source="profile.png" Aspect="AspectFill" />
+                    </Frame>
+                    <Button Text="What's on your mind?" HorizontalOptions="FillAndExpand"
+                        BackgroundColor="#F0F2F5" BorderColor="LightGray"
+                        CornerRadius="20" TextColor="Black"
+                        WidthRequest="280"/>
+                    <Image Source="icon_photo.png" HeightRequest="30" />
+                </HorizontalStackLayout>
+            </Frame>
+
+            <!-- Story Carousel -->
+            <ScrollView Orientation="Horizontal" Padding="10">
+                <HorizontalStackLayout Spacing="10">
+                    <VerticalStackLayout WidthRequest="100">
+                        <Frame BorderColor="LightGray" CornerRadius="10" HeightRequest="150">
+                            <Image Source="plus.png" HeightRequest="50" />
+                        </Frame>
+                        <Label Text="Create story" FontSize="12" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout WidthRequest="100">
+                        <Frame BorderColor="LightGray" CornerRadius="10" HeightRequest="150" Padding="0">
+                            <Image Source="story.png" Aspect="AspectFill" />
+                        </Frame>
+                        <Label Text="Your Story" FontSize="12" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout WidthRequest="100">
+                        <Frame BorderColor="LightGray" CornerRadius="10" HeightRequest="150" Padding="0">
+                            <Image Source="story1.png" Aspect="AspectFill" />
+                        </Frame>
+                        <Label Text="Cyrile Cortes" FontSize="12" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout WidthRequest="100">
+                        <Frame BorderColor="LightGray" CornerRadius="10" HeightRequest="150" Padding="0">
+                            <Image Source="story2.png" Aspect="AspectFill" />
+                        </Frame>
+                        <Label Text="Joshua Alduexa" FontSize="12" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout WidthRequest="100">
+                        <Frame BorderColor="LightGray" CornerRadius="10" HeightRequest="150" Padding="0">
+                            <Image Source="story3.png" Aspect="AspectFill" />
+                        </Frame>
+                        <Label Text="ADanyl Filcarl" FontSize="12" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                    <!-- Add more stories as needed -->
+                </HorizontalStackLayout>
+            </ScrollView>
+
+            <!-- Post Feed -->
+            <Frame CornerRadius="10" BorderColor="LightGray" Margin="10" Padding="10">
+                <VerticalStackLayout Spacing="5">
+                    <HorizontalStackLayout Spacing="10">
+                        <Frame CornerRadius="20" WidthRequest="40" HeightRequest="40" Padding="0" HasShadow="False">
+                            <Image Source="otherprofile.png" Aspect="AspectFill" />
+                        </Frame>
+                        <VerticalStackLayout>
+                            <Label Text="Dress to Impress on Roblox" FontAttributes="Bold" FontSize="14" />
+                            <Label Text="21h · Public" FontSize="10" TextColor="Gray" />
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+
+                    <Label Text="Very expensive in New set! Except the walk pose..." FontSize="14" />
+
+                    <!-- Post Images -->
+                    <Image Source="post1.png" Aspect="AspectFill" HeightRequest="200" Margin="0,5,0,0"/>
+                    <Image Source="post2.png" Aspect="AspectFill" HeightRequest="200" Margin="0,5,0,0"/>
+                </VerticalStackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
