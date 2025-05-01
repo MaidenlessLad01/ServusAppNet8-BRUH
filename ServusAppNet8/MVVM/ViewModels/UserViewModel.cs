@@ -12,6 +12,8 @@ using ServusAppNet8.MVVM.Views;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Collections.ObjectModel;
 
 namespace ServusAppNet8.MVVM.ViewModels
 {
@@ -37,12 +39,22 @@ namespace ServusAppNet8.MVVM.ViewModels
         public ICommand LoginButton => new Command(Login);
         public ICommand ContinueCommand => new Command(OnContinue);
         public ICommand RegisterButton => new Command(Register);
+
+        public string baseURL = "https://68107efd27f2fdac241199ad.mockapi.io/User";
+        private HttpClient _httpClient;
+
+        //ObservableCollection because List won't work
+        public ObservableCollection<string> _listGenders;
         #endregion
 
         public UserViewModel()
         {
             users = new User();
-           
+            _httpClient = new HttpClient();
+            ListGenders = new ObservableCollection<string> { "Male", "Female", "Shopping Cart", "Godzilla", "Walmart Bag", "Attack Helicopter", "Prefer Not To Say" };
+
+            DoB = DateTime.Now;
+
         }
         #region Mga Get Sets
 
@@ -56,6 +68,7 @@ namespace ServusAppNet8.MVVM.ViewModels
                 OnPropertyChanged(nameof(FName)); 
             }
         }
+
         public string LName
         {
             get => _lName;
@@ -96,6 +109,7 @@ namespace ServusAppNet8.MVVM.ViewModels
                 ValidateEmailOrPhone();
             }
         }
+
         //set value for password
         public string Password
         {
@@ -119,6 +133,17 @@ namespace ServusAppNet8.MVVM.ViewModels
                 OnPropertyChanged(nameof(ConfirmPassword));
             }
         }
+
+        public ObservableCollection<string> ListGenders
+        {
+            get => _listGenders;
+            set
+            {
+                _listGenders = value;
+                OnPropertyChanged(nameof(ListGenders));
+            }
+        }
+
         //validate whether email or phone num is correct format
         private void ValidateEmailOrPhone()
         {
@@ -174,28 +199,80 @@ namespace ServusAppNet8.MVVM.ViewModels
                 return; // Exit if validation fails
             }
 
-            FakeDB.Users.Add(new User { FirstName = FName, LastName = LName, DoB = DoB, SelectedGender = SelectedGender });
-            //DoB = DateOnly.FromDateTime(DoB.DateTime);
-            await Application.Current.MainPage.Navigation.PushAsync(new Home
+            var response = await _httpClient.GetAsync(baseURL);
+
+            if (response.IsSuccessStatusCode)
             {
-                BindingContext = this
-            });
+                var contents = await response.Content.ReadAsStringAsync();
+                var users = JsonSerializer.Deserialize<List<User>>(contents);
+
+                foreach (var user in users)
+                {
+                    if (user.Email == emailOrPhone || user.PhoneNum == emailOrPhone)
+                    {
+                        var additionalDetails = new User
+                        {
+                            Email = EmailOrPhone,
+                            PhoneNum = EmailOrPhone,
+                            Password = Password,
+                            FirstName = FName,
+                            LastName = LName,
+                            DoB = DoB,
+                            Gender = SelectedGender
+                        };
+
+                        var json = JsonSerializer.Serialize(additionalDetails);
+                        var content = new StringContent(json, Encoding.UTF8, "Application/json");
+
+                        var res = await _httpClient.PutAsync($"{baseURL}/{user.UserId}", content);
+
+                        if (res.IsSuccessStatusCode)
+                        {
+                            await Application.Current.MainPage.Navigation.PushAsync(new Home
+                            {
+                                BindingContext = this
+                            });
+                        }
+                        else
+                        {
+                            await App.Current.MainPage.DisplayAlert("Error", "Couldn't update details", "OK");
+                        }
+                    }
+                }
+            }
         }
-        private void Login()
+
+        private async void Login()
         {
-            //Check if username and password exists
-            if (FakeDB.Users.Any(u => u.Email == emailOrPhone || u.PhoneNum == emailOrPhone && u.Password == Password))
+            // Check if username already exists
+            var response = await _httpClient.GetAsync(baseURL);
+            if (response.IsSuccessStatusCode)
             {
-                App.Current.MainPage.DisplayAlert("Welcome","Wazgud Cuh","Nigga");
-                App.Current.MainPage = new NavigationPage(new Profile());
-            }
-            else
-            {
-                App.Current.MainPage.DisplayAlert("Login", "Login Unsuccessful\nInvalid Email/Phone Number or Password", "OK");
-                App.Current.MainPage = new NavigationPage(new Home());
+                var contents = await response.Content.ReadAsStringAsync();
+                var users = JsonSerializer.Deserialize<List<User>>(contents);
+
+                //Check if username and password exists
+                if(users.Any(u => (u.Email == EmailOrPhone || u.PhoneNum == EmailOrPhone) && u.Password == Password))
+                {
+                    await App.Current.MainPage.DisplayAlert("Welcome", "Welcome to Servus!", "OK");
+
+                    if (users.Any(u => (string.IsNullOrEmpty(u.FirstName) || string.IsNullOrEmpty(u.LastName) || string.IsNullOrEmpty(u.Gender))))
+                    {
+                        App.Current.MainPage = new NavigationPage(new Profile { BindingContext = this });
+                        return;
+                    }
+
+                    App.Current.MainPage = new NavigationPage(new Home { BindingContext = this });
+                    
+                }
+                else
+                {
+                    App.Current.MainPage.DisplayAlert("Login Unsuccessful", "Invalid Credentials", "OK");
+                }
             }
         }
-        private void Register()
+
+        private async void Register()
         {
             if (string.IsNullOrEmpty(EmailOrPhone) || string.IsNullOrEmpty(Password))
             {
@@ -219,23 +296,51 @@ namespace ServusAppNet8.MVVM.ViewModels
             }
 
             // Check if username already exists
-            if (FakeDB.Users.Any(u => u.Email == EmailOrPhone || u.PhoneNum == EmailOrPhone))
+            var response = await _httpClient.GetAsync(baseURL);
+            if (response.IsSuccessStatusCode)
             {
-                App.Current.MainPage.DisplayAlert("Register", "Account Already Exists", "OK");
-                return; // Exit if account already exists
+                var contents = await response.Content.ReadAsStringAsync();
+                var users = JsonSerializer.Deserialize<List<User>>(contents);
+
+                if(users.Any(u => u.Email == EmailOrPhone || u.PhoneNum == EmailOrPhone))
+                {
+                    App.Current.MainPage.DisplayAlert("Register", "Account Already Exists", "OK");
+                    return; // Exit if account already exists
+                }
             }
 
             // Check if passwords match
             if (Password != ConfirmPassword)
             {
-                App.Current.MainPage.DisplayAlert("Register", "Passwords Do Not Match, Nigga", "OK");
+                App.Current.MainPage.DisplayAlert("Register", "Passwords Do Not Match!", "OK");
                 return; // Exit if passwords don't match
             }
 
             // Add user/register
-            FakeDB.Users.Add(new User { Email = EmailOrPhone, PhoneNum = EmailOrPhone, Password = Password });
-            App.Current.MainPage.DisplayAlert("Register", "Account Registered", "OK");
-            App.Current.MainPage = new NavigationPage(new LandingPageView());
+            var newUser = new User 
+            {
+                Email = EmailOrPhone,
+                PhoneNum = EmailOrPhone,
+                Password = Password
+            };
+
+            //Changes the data into json to be readable for the API
+            var json = JsonSerializer.Serialize(newUser);
+            var content = new StringContent(json, Encoding.UTF8, "Application/json");
+            
+            //Stores into the API
+            var res = await _httpClient.PostAsync(baseURL, content);
+            
+            //Checks if the account was successfully added
+            if (res.IsSuccessStatusCode)
+            {
+                await App.Current.MainPage.DisplayAlert("Register", "Account Registered", "OK");
+                App.Current.MainPage = new NavigationPage(new LandingPageView());
+            }
+            else
+            {
+                App.Current.MainPage.DisplayAlert("Error", "Account Was Not Registered", "OK");
+            }
         }
       
         #endregion
@@ -258,11 +363,13 @@ namespace ServusAppNet8.MVVM.ViewModels
 
             set { signUpError = value; OnPropertyChanged(nameof(SignUpError)); }
         }
+
         public string EmailOrPhoneError
         {
             get => emailOrPhoneError;
             set { emailOrPhoneError = value; OnPropertyChanged(nameof(EmailOrPhoneError)); }
         }
+
         private bool ValidateNames()
         {
             if (string.IsNullOrEmpty(FName) || string.IsNullOrEmpty(LName))
@@ -364,12 +471,9 @@ namespace ServusAppNet8.MVVM.ViewModels
             return Regex.IsMatch(input, @"^\+?[1-9]\d{1,14}$");
         }
         #endregion
-        public event PropertyChangedEventHandler PropertyChanged;
 
-        protected virtual void OnPropertyChanged([CallerMemberName]string propertyName = null)
-        {
-            
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected virtual void OnPropertyChanged([CallerMemberName]string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        
     }
 }

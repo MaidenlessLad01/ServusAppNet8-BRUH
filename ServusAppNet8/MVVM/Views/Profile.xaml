@@ -65,7 +65,7 @@
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="8"/>
                     </Border.StrokeShape>
-                    <Picker x:Name="Gender" HorizontalTextAlignment="Center" Title="Select Mental Illness" ItemsSource="{Binding users.Gender}" SelectedItem="{Binding SelectedGender}" TextColor="Black"/></Border>
+                    <Picker x:Name="Gender" HorizontalTextAlignment="Center" Title="Select Mental Illness" ItemsSource="{Binding ListGenders}" SelectedItem="{Binding SelectedGender}" TextColor="Black"/></Border>
                 <Button Text="Continue" Command="{Binding ContinueCommand}" WidthRequest="150"  Margin="0,30,0,-10" TextColor="White" BackgroundColor="OrangeRed"></Button>
             </VerticalStackLayout>
         </Border>
