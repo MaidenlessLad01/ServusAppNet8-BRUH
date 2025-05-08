@@ -208,6 +208,7 @@ namespace ServusAppNet8.MVVM.ViewModels
 
                 foreach (var user in users)
                 {
+                    //gets the userId
                     if (user.Email == emailOrPhone || user.PhoneNum == emailOrPhone)
                     {
                         var additionalDetails = new User
