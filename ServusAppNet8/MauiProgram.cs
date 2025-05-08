@@ -1,5 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using ServusAppNet8.MVVM.ViewModels;
+using ServusAppNet8.MVVM.Views;
 
 namespace ServusAppNet8
 {
@@ -20,6 +22,10 @@ namespace ServusAppNet8
 
 #if DEBUG
     		builder.Logging.AddDebug();
+            builder.Services.AddSingleton<UserViewModel>();
+            builder.Services.AddSingleton<LoginPageView>();
+            builder.Services.AddSingleton<LandingPageView>();
+            builder.Services.AddSingleton<SignupPageView>();
 #endif
 
             return builder.Build();

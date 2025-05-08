@@ -36,6 +36,11 @@ namespace ServusAppNet8.MVVM.ViewModels
         private string emailOrPhoneError;
         private string _confirmpass;
         //Commands for logging in and registering
+        public ICommand gotoLogin => new Command(NavtoLogin);
+        public ICommand gotoReg => new Command(NavtoReg);
+
+      
+
         public ICommand LoginButton => new Command(Login);
         public ICommand ContinueCommand => new Command(OnContinue);
         public ICommand RegisterButton => new Command(Register);
@@ -191,6 +196,15 @@ namespace ServusAppNet8.MVVM.ViewModels
         #endregion
 
         #region Login and Register Methods
+        private void NavtoReg()
+        {
+            Application.Current.MainPage = App.Services.GetRequiredService<SignupPageView>();
+        }
+
+        private void NavtoLogin(object obj)
+        {
+            Application.Current.MainPage = App.Services.GetRequiredService<LoginPageView>();
+        }
         private async void OnContinue()
         {
             if (!ValidateNames())
@@ -342,8 +356,11 @@ namespace ServusAppNet8.MVVM.ViewModels
             {
                 App.Current.MainPage.DisplayAlert("Error", "Account Was Not Registered", "OK");
             }
+
+
         }
       
+
         #endregion
 
         #region Error Handlers
@@ -381,31 +398,31 @@ namespace ServusAppNet8.MVVM.ViewModels
 
             if (FName.Length < 2 || LName.Length < 2)
             {
-                NameError = "Names must be at least 2 characters long.";
+                NameError = "Either names must be at least 2 characters long.";
                 return false;
             }
 
-            if (!Regex.IsMatch(FName, @"[A-Z]") || !Regex.IsMatch(LName, @"[A-Z]"))
+            if (!Regex.IsMatch(FName, @"^[A-Z]") || !Regex.IsMatch(LName, @"^[A-Z]"))
             {
-                NameError = "Names must contain at least one uppercase letter.";
+                NameError = "The first letter must be an uppercase letter.";
                 return false;
             }
 
             if (!Regex.IsMatch(FName, @"[a-z]") || !Regex.IsMatch(LName, @"[a-z]"))
             {
-                NameError = "Names must contain at least one lowercase letter.";
+                NameError = "Either names must contain at least one lowercase letter.";
                 return false;
             }
 
-            if (FName.Length > 7 || LName.Length > 7)
+            if (FName.Length >= 15 || LName.Length >= 15)
             {
-                NameError = "Names must be at most 7 characters long.";
+                NameError = "Either names must be at most 15 characters long only.";
                 return false;
             }
 
             if (Regex.IsMatch(FName, @"\d") || Regex.IsMatch(LName, @"\d"))
             {
-                NameError = "Names cannot contain numbers.";
+                NameError = "Either names cannot contain numbers.";
                 return false;
             }
 
@@ -440,7 +457,7 @@ namespace ServusAppNet8.MVVM.ViewModels
             }
             if(Password.Length > 13)
             {
-                PasswordError = "Password Too Long!\nMaximum of 13 Characters Only!\nKalimtanon raba ka LMAO";
+                PasswordError = "Password Too Long!\nMaximum of 13 Characters Only!";
                 return false;
             }
 
