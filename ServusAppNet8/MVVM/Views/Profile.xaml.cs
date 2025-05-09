@@ -11,6 +11,7 @@ public partial class Profile : ContentPage
         InitializeComponent();
         BindingContext = new UserViewModel(registeredUser);
     }
+
     public Profile()
     {
         InitializeComponent();

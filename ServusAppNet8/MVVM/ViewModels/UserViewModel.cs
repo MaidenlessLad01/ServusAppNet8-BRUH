@@ -209,7 +209,7 @@ namespace ServusAppNet8.MVVM.ViewModels
         #region Login and Register Methods
         private void NavtoReg()
         {
-            Application.Current.MainPage = Application.Services.GetRequiredService<SignupPageView>();
+            Application.Current.MainPage = App.Services.GetRequiredService<SignupPageView>();
         }
 
         private void NavtoLogin(object obj)
@@ -274,107 +274,6 @@ namespace ServusAppNet8.MVVM.ViewModels
                 }
             }
         }
-        private async Task UpdateProfile()
-        {
-            try
-            {
-                if (string.IsNullOrEmpty(CurrentUserId))
-                {
-                    await App.Current.MainPage.DisplayAlert("Error", "User ID is missing. Please log in again.", "OK");
-                    return;
-                }
-
-                var updatedUser = new User
-                {
-                    Email = EmailOrPhone,
-                    PhoneNum = EmailOrPhone,
-                    Password = Password,
-                    FirstName = FName,
-                    LastName = LName,
-                    DoB = DoB,
-                    Gender = SelectedGender
-                };
-
-                var json = JsonSerializer.Serialize(updatedUser);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-                var response = await _httpClient.PutAsync($"{baseURL}/{CurrentUserId}", content);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    await Application.Current.MainPage.Navigation.PushAsync(new Home { BindingContext = this });
-                }
-                else
-                {
-                    await App.Current.MainPage.DisplayAlert("Error", "Couldn't update details", "OK");
-                }
-            }
-            catch (Exception ex)
-            {
-                await App.Current.MainPage.DisplayAlert("Error", $"Update Failed: {ex.Message}", "OK");
-            }
-        }
-        //private async void OnContinue()
-        //{
-        //    if (!ValidateNames())
-        //    {
-        //        await Application.Current.MainPage.DisplayAlert("Error", NameError, "OK");
-        //        return; // Exit if validation fails
-        //    }
-
-        //    // Assuming you have a way to access the UserId of the current user
-        //    // (e.g., passed as a parameter or stored in the ViewModel)
-        //    string currentUserId = ;
-        //    var response = await _httpClient.GetAsync($"{baseURL}/{currentUserId}");
-
-        //    if (response.IsSuccessStatusCode)
-        //    {
-        //        var contents = await response.Content.ReadAsStringAsync();
-        //        var userToUpdate = JsonSerializer.Deserialize<User>(contents);
-
-        //        if (userToUpdate != null)
-        //        {
-        //            var additionalDetails = new User
-        //            {
-        //                UserId = currentUserId, // Ensure you're using the correct ID
-        //                Email = userToUpdate.Email, // Keep existing email
-        //                PhoneNum = userToUpdate.PhoneNum, // Keep existing phone
-        //                Password = userToUpdate.Password, // Keep existing password (or allow update?)
-        //                FirstName = FName,
-        //                LastName = LName,
-        //                DoB = DoB,
-        //                Gender = SelectedGender
-        //            };
-
-        //            var json = JsonSerializer.Serialize(additionalDetails);
-        //            var content = new StringContent(json, Encoding.UTF8, "Application/json");
-
-        //            var res = await _httpClient.PutAsync($"{baseURL}/{currentUserId}", content);
-
-        //            if (res.IsSuccessStatusCode)
-        //            {
-        //                await Application.Current.MainPage.Navigation.PushAsync(new Home
-        //                {
-        //                    BindingContext = this // Or a new HomeViewModel
-        //                });
-        //            }
-        //            else
-        //            {
-        //                await App.Current.MainPage.DisplayAlert("Error", "Couldn't update details", "OK");
-        //            }
-        //        }
-        //        else
-        //        {
-        //            await App.Current.MainPage.DisplayAlert("Error", "User not found", "OK");
-        //        }
-        //    }
-        //    else
-        //    {
-        //        await App.Current.MainPage.DisplayAlert("Error", "Failed to retrieve user details", "OK");
-        //    }
-        //}
-
-
 
         private async void Login()
         {
@@ -395,9 +294,6 @@ namespace ServusAppNet8.MVVM.ViewModels
                        App.Current.MainPage = new NavigationPage(new Home { BindingContext = this });
                         return;
                     }
-
-                    //App.Current.MainPage = new NavigationPage(new Home { BindingContext = this });
-                    
                 }
                 else
                 {
@@ -458,12 +354,7 @@ namespace ServusAppNet8.MVVM.ViewModels
             //Checks if the account was successfully added
 
             if (res.IsSuccessStatusCode)
-
             {
-                //await Task.Delay(1000);
-                //await App.Current.MainPage.DisplayAlert("Register", "Account Registered", "OK");
-
-                //App.Current.MainPage = new NavigationPage(new Profile());
                 var responseContent = await res.Content.ReadAsStringAsync();
                 var createdUser = JsonSerializer.Deserialize<User>(responseContent);
 
