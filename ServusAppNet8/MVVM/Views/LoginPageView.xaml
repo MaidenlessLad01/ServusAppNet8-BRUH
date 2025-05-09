@@ -37,7 +37,7 @@
         </GraphicsView>
         <!--BackButton-->
         <ImageButton x:Name="BackButton" Margin="20,20,0,0" WidthRequest="25" 
-                  HeightRequest="25" HorizontalOptions="Start" Clicked="BackButton_Clicked" VerticalOptions="Center">
+                  HeightRequest="25" HorizontalOptions="Start"  Command="{Binding gotoLanding}"  VerticalOptions="Center">
             <ImageButton.Source>
                 <FontImageSource FontFamily="icon" Glyph="&#xe800;" Size="30" Color="Gray"/>
             </ImageButton.Source>

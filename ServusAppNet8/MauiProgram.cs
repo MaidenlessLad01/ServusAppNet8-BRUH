@@ -26,6 +26,9 @@ namespace ServusAppNet8
             builder.Services.AddSingleton<LoginPageView>();
             builder.Services.AddSingleton<LandingPageView>();
             builder.Services.AddSingleton<SignupPageView>();
+            builder.Services.AddSingleton<Profile>();
+            builder.Services.AddSingleton<Home>();
+            builder.Services.AddSingleton<SplashPage>();
 #endif
 
             return builder.Build();

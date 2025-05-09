@@ -2,9 +2,11 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="ServusAppNet8.MVVM.Views.Profile"
+             xmlns:local="clr-namespace:ServusAppNet8.MVVM.ViewModels"
              NavigationPage.HasNavigationBar="False"
              Shell.NavBarIsVisible="False"
              Title="Profile">
+   
     <Grid x:Name="MainGrid">
         <!--Gradient Background-->
         <Grid.Background>

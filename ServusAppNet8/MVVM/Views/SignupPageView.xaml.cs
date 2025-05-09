@@ -9,14 +9,4 @@ public partial class SignupPageView : ContentPage
 		InitializeComponent();
         BindingContext = new UserViewModel();
 	}
-
-    private async void BackButton_Clicked(object sender, EventArgs e)
-    {
-        await Navigation.PopAsync();
-    }
-
-    private async void Button_Clicked(object sender, EventArgs e)
-    {
-        await Navigation.PushAsync(new LoginPageView());
-    }
 }
