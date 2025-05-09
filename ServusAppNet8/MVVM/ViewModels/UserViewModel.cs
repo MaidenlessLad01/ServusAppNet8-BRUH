@@ -198,7 +198,7 @@ namespace ServusAppNet8.MVVM.ViewModels
         #region Login and Register Methods
         private void NavtoReg()
         {
-            Application.Current.MainPage = App.Services.GetRequiredService<SignupPageView>();
+            Application.Current.MainPage = Application.Services.GetRequiredService<SignupPageView>();
         }
 
         private void NavtoLogin(object obj)
