@@ -22,7 +22,7 @@ namespace ServusAppNet8.MVVM.ViewModels
         #region Variables and Commands
         //var declaration
         public User users { get; set; }
-        
+        //public string UserId { get; set; }
         private string _selectedGender;
         //public string SelectedGender { get; set; }
         private string emailOrPhone;
@@ -30,19 +30,23 @@ namespace ServusAppNet8.MVVM.ViewModels
         private string _fName;
         private string _lName;
         private string nameError;
-        private DateTime _dob;
+        private DateTime _dob = DateTime.Now;
+        public string CurrentUserId { get; private set; } // Make it a property
         private string passwordError;
         private string signUpError;
         private string emailOrPhoneError;
         private string _confirmpass;
+
+        public string UserId => users?.UserId; // Expose UserId
+        
         //Commands for logging in and registering
         public ICommand gotoLogin => new Command(NavtoLogin);
         public ICommand gotoReg => new Command(NavtoReg);
-
+        public ICommand gotoLanding => new Command(NavtoLanding);
       
 
         public ICommand LoginButton => new Command(Login);
-        public ICommand ContinueCommand => new Command(OnContinue);
+        public ICommand ContinueCommand { get; }
         public ICommand RegisterButton => new Command(Register);
 
         public string baseURL = "https://68107efd27f2fdac241199ad.mockapi.io/User";
@@ -51,13 +55,20 @@ namespace ServusAppNet8.MVVM.ViewModels
         //ObservableCollection because List won't work
         public ObservableCollection<string> _listGenders;
         #endregion
-
+        public UserViewModel(User user)
+        {
+            users = user;
+            EmailOrPhone = user.Email ?? user.PhoneNum;
+            ListGenders = new ObservableCollection<string> { "Male", "Female", "Shopping Cart", "Godzilla", "Walmart Bag", "Attack Helicopter", "Prefer Not To Say" };
+            ContinueCommand = new Command(async () => await OnContinue());
+            _httpClient = new HttpClient();
+            Password = user.Password;
+        }
         public UserViewModel()
         {
+         //   CurrentUserId = userId;
             users = new User();
             _httpClient = new HttpClient();
-            ListGenders = new ObservableCollection<string> { "Male", "Female", "Shopping Cart", "Godzilla", "Walmart Bag", "Attack Helicopter", "Prefer Not To Say" };
-
             DoB = DateTime.Now;
 
         }
@@ -205,8 +216,17 @@ namespace ServusAppNet8.MVVM.ViewModels
         {
             Application.Current.MainPage = App.Services.GetRequiredService<LoginPageView>();
         }
-        private async void OnContinue()
+        private void NavtoLanding(object obj)
         {
+            Application.Current.MainPage = App.Services.GetRequiredService<LandingPageView>();
+        }
+        private async Task OnContinue()
+        {
+            if (users == null || users.UserId == null)
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", "User information is missing. Cannot update profile.", "OK");
+                return;
+            }
             if (!ValidateNames())
             {
                 await Application.Current.MainPage.DisplayAlert("Error", NameError, "OK");
@@ -220,42 +240,141 @@ namespace ServusAppNet8.MVVM.ViewModels
                 var contents = await response.Content.ReadAsStringAsync();
                 var users = JsonSerializer.Deserialize<List<User>>(contents);
 
-                foreach (var user in users)
+               
+                //gets the userId
+                   
+                var additionalDetails = new User
                 {
-                    //gets the userId
-                    if (user.Email == emailOrPhone || user.PhoneNum == emailOrPhone)
+                    Email = EmailOrPhone,
+                    PhoneNum = EmailOrPhone,
+                    Password = Password,
+                    FirstName = FName,
+                    LastName = LName,
+                    DoB = DoB,
+                    Gender = SelectedGender
+                };
+
+                var json = JsonSerializer.Serialize(additionalDetails);
+                var content = new StringContent(json, Encoding.UTF8, "Application/json");
+
+                var res = await _httpClient.PutAsync($"{baseURL}/{UserId}", content);
+
+                if (res.IsSuccessStatusCode)
+                {
+
+
+                    await Application.Current.MainPage.Navigation.PushAsync(new Home
                     {
-                        var additionalDetails = new User
-                        {
-                            Email = EmailOrPhone,
-                            PhoneNum = EmailOrPhone,
-                            Password = Password,
-                            FirstName = FName,
-                            LastName = LName,
-                            DoB = DoB,
-                            Gender = SelectedGender
-                        };
-
-                        var json = JsonSerializer.Serialize(additionalDetails);
-                        var content = new StringContent(json, Encoding.UTF8, "Application/json");
-
-                        var res = await _httpClient.PutAsync($"{baseURL}/{user.UserId}", content);
-
-                        if (res.IsSuccessStatusCode)
-                        {
-                            await Application.Current.MainPage.Navigation.PushAsync(new Home
-                            {
-                                BindingContext = this
-                            });
-                        }
-                        else
-                        {
-                            await App.Current.MainPage.DisplayAlert("Error", "Couldn't update details", "OK");
-                        }
-                    }
+                        BindingContext = this
+                    });
+                }
+                else
+                {
+                    await App.Current.MainPage.DisplayAlert("Error", "Couldn't update details", "OK");
                 }
             }
         }
+        private async Task UpdateProfile()
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(CurrentUserId))
+                {
+                    await App.Current.MainPage.DisplayAlert("Error", "User ID is missing. Please log in again.", "OK");
+                    return;
+                }
+
+                var updatedUser = new User
+                {
+                    Email = EmailOrPhone,
+                    PhoneNum = EmailOrPhone,
+                    Password = Password,
+                    FirstName = FName,
+                    LastName = LName,
+                    DoB = DoB,
+                    Gender = SelectedGender
+                };
+
+                var json = JsonSerializer.Serialize(updatedUser);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                var response = await _httpClient.PutAsync($"{baseURL}/{CurrentUserId}", content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    await Application.Current.MainPage.Navigation.PushAsync(new Home { BindingContext = this });
+                }
+                else
+                {
+                    await App.Current.MainPage.DisplayAlert("Error", "Couldn't update details", "OK");
+                }
+            }
+            catch (Exception ex)
+            {
+                await App.Current.MainPage.DisplayAlert("Error", $"Update Failed: {ex.Message}", "OK");
+            }
+        }
+        //private async void OnContinue()
+        //{
+        //    if (!ValidateNames())
+        //    {
+        //        await Application.Current.MainPage.DisplayAlert("Error", NameError, "OK");
+        //        return; // Exit if validation fails
+        //    }
+
+        //    // Assuming you have a way to access the UserId of the current user
+        //    // (e.g., passed as a parameter or stored in the ViewModel)
+        //    string currentUserId = ;
+        //    var response = await _httpClient.GetAsync($"{baseURL}/{currentUserId}");
+
+        //    if (response.IsSuccessStatusCode)
+        //    {
+        //        var contents = await response.Content.ReadAsStringAsync();
+        //        var userToUpdate = JsonSerializer.Deserialize<User>(contents);
+
+        //        if (userToUpdate != null)
+        //        {
+        //            var additionalDetails = new User
+        //            {
+        //                UserId = currentUserId, // Ensure you're using the correct ID
+        //                Email = userToUpdate.Email, // Keep existing email
+        //                PhoneNum = userToUpdate.PhoneNum, // Keep existing phone
+        //                Password = userToUpdate.Password, // Keep existing password (or allow update?)
+        //                FirstName = FName,
+        //                LastName = LName,
+        //                DoB = DoB,
+        //                Gender = SelectedGender
+        //            };
+
+        //            var json = JsonSerializer.Serialize(additionalDetails);
+        //            var content = new StringContent(json, Encoding.UTF8, "Application/json");
+
+        //            var res = await _httpClient.PutAsync($"{baseURL}/{currentUserId}", content);
+
+        //            if (res.IsSuccessStatusCode)
+        //            {
+        //                await Application.Current.MainPage.Navigation.PushAsync(new Home
+        //                {
+        //                    BindingContext = this // Or a new HomeViewModel
+        //                });
+        //            }
+        //            else
+        //            {
+        //                await App.Current.MainPage.DisplayAlert("Error", "Couldn't update details", "OK");
+        //            }
+        //        }
+        //        else
+        //        {
+        //            await App.Current.MainPage.DisplayAlert("Error", "User not found", "OK");
+        //        }
+        //    }
+        //    else
+        //    {
+        //        await App.Current.MainPage.DisplayAlert("Error", "Failed to retrieve user details", "OK");
+        //    }
+        //}
+
+
 
         private async void Login()
         {
@@ -273,11 +392,11 @@ namespace ServusAppNet8.MVVM.ViewModels
 
                     if (users.Any(u => (string.IsNullOrEmpty(u.FirstName) || string.IsNullOrEmpty(u.LastName) || string.IsNullOrEmpty(u.Gender))))
                     {
-                        App.Current.MainPage = new NavigationPage(new Profile { BindingContext = this });
+                       App.Current.MainPage = new NavigationPage(new Home { BindingContext = this });
                         return;
                     }
 
-                    App.Current.MainPage = new NavigationPage(new Home { BindingContext = this });
+                    //App.Current.MainPage = new NavigationPage(new Home { BindingContext = this });
                     
                 }
                 else
@@ -286,7 +405,6 @@ namespace ServusAppNet8.MVVM.ViewModels
                 }
             }
         }
-
         private async void Register()
         {
             if (string.IsNullOrEmpty(EmailOrPhone) || string.IsNullOrEmpty(Password))
@@ -294,7 +412,6 @@ namespace ServusAppNet8.MVVM.ViewModels
                 App.Current.MainPage.DisplayAlert("Register", "Please Enter Fields Properly", "OK");
                 return; // Exit the method if fields are empty
             }
-
             // Validate Email/Phone
             ValidateEmailOrPhone();
             if (!string.IsNullOrEmpty(EmailOrPhoneError))
@@ -302,68 +419,169 @@ namespace ServusAppNet8.MVVM.ViewModels
                 App.Current.MainPage.DisplayAlert("Register", EmailOrPhoneError, "OK");
                 return; // Exit if Email/Phone validation fails
             }
-
             // Validate Password
             if (!ValidatePassword())
             {
                 App.Current.MainPage.DisplayAlert("Register", PasswordError, "OK");
                 return; // Exit if Password validation fails
             }
-
             // Check if username already exists
             var response = await _httpClient.GetAsync(baseURL);
             if (response.IsSuccessStatusCode)
             {
                 var contents = await response.Content.ReadAsStringAsync();
                 var users = JsonSerializer.Deserialize<List<User>>(contents);
-
-                if(users.Any(u => u.Email == EmailOrPhone || u.PhoneNum == EmailOrPhone))
+                if (users.Any(u => u.Email == EmailOrPhone || u.PhoneNum == EmailOrPhone))
                 {
                     App.Current.MainPage.DisplayAlert("Register", "Account Already Exists", "OK");
                     return; // Exit if account already exists
                 }
             }
-
             // Check if passwords match
             if (Password != ConfirmPassword)
             {
                 App.Current.MainPage.DisplayAlert("Register", "Passwords Do Not Match!", "OK");
                 return; // Exit if passwords don't match
             }
-
             // Add user/register
-            var newUser = new User 
+            var newUser = new User
             {
                 Email = EmailOrPhone,
                 PhoneNum = EmailOrPhone,
                 Password = Password
             };
-
             //Changes the data into json to be readable for the API
             var json = JsonSerializer.Serialize(newUser);
             var content = new StringContent(json, Encoding.UTF8, "Application/json");
-            
             //Stores into the API
             var res = await _httpClient.PostAsync(baseURL, content);
-            
             //Checks if the account was successfully added
+
             if (res.IsSuccessStatusCode)
+
             {
-                await App.Current.MainPage.DisplayAlert("Register", "Account Registered", "OK");
-                App.Current.MainPage = new NavigationPage(new LandingPageView());
+                //await Task.Delay(1000);
+                //await App.Current.MainPage.DisplayAlert("Register", "Account Registered", "OK");
+
+                //App.Current.MainPage = new NavigationPage(new Profile());
+                var responseContent = await res.Content.ReadAsStringAsync();
+                var createdUser = JsonSerializer.Deserialize<User>(responseContent);
+
+                if (createdUser != null)
+                {
+                    await App.Current.MainPage.DisplayAlert("Register", "Account Registered", "OK");
+
+                    App.Current.MainPage = new NavigationPage(new Profile(createdUser));
+                }
+                else
+                {
+                    await App.Current.MainPage.DisplayAlert("Error", "Failed to parse created user", "OK");
+                }
             }
             else
             {
                 App.Current.MainPage.DisplayAlert("Error", "Account Was Not Registered", "OK");
             }
-
-
         }
-      
+        //private async void Register()
+        //{
+        //    if (string.IsNullOrEmpty(EmailOrPhone) || string.IsNullOrEmpty(Password))
+        //    {
+        //        App.Current.MainPage.DisplayAlert("Register", "Please Enter Fields Properly", "OK");
+        //        return; // Exit the method if fields are empty
+        //    }
 
-        #endregion
+            //    // Validate Email/Phone
+            //    ValidateEmailOrPhone();
+            //    if (!string.IsNullOrEmpty(EmailOrPhoneError))
+            //    {
+            //        App.Current.MainPage.DisplayAlert("Register", EmailOrPhoneError, "OK");
+            //        return; // Exit if Email/Phone validation fails
+            //    }
 
-        #region Error Handlers
+            //    // Validate Password
+            //    if (!ValidatePassword())
+            //    {
+            //        App.Current.MainPage.DisplayAlert("Register", PasswordError, "OK");
+            //        return; // Exit if Password validation fails
+            //    }
+
+            //    // Check if username already exists
+            //    var response = await _httpClient.GetAsync(baseURL);
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        var contents = await response.Content.ReadAsStringAsync();
+            //        var users = JsonSerializer.Deserialize<List<User>>(contents);
+
+            //        if(users.Any(u => u.Email == EmailOrPhone || u.PhoneNum == EmailOrPhone))
+            //        {
+            //            App.Current.MainPage.DisplayAlert("Register", "Account Already Exists", "OK");
+            //            return; // Exit if account already exists
+            //        }
+            //    }
+
+            //    // Check if passwords match
+            //    if (Password != ConfirmPassword)
+            //    {
+            //        App.Current.MainPage.DisplayAlert("Register", "Passwords Do Not Match!", "OK");
+            //        return; // Exit if passwords don't match
+            //    }
+
+            //    // Add user/register
+            //    var newUser = new User 
+            //    {
+            //        Email = EmailOrPhone,
+            //        PhoneNum = EmailOrPhone,
+            //        Password = Password
+            //    };
+
+            //    //Changes the data into json to be readable for the API
+            //    var json = JsonSerializer.Serialize(newUser);
+            //    var content = new StringContent(json, Encoding.UTF8, "Application/json");
+
+            //    //Stores into the API
+            //    var res = await _httpClient.PostAsync(baseURL, content);
+
+            //    //Checks if the account was successfully added
+            //    if (res.IsSuccessStatusCode)
+            //    {
+            //        //await App.Current.MainPage.DisplayAlert("Register", "Account Registered", "OK");
+            //        //App.Current.MainPage = new NavigationPage(new Profile());
+
+            //            var newUserResponse = await res.Content.ReadAsStringAsync();
+            //            try
+            //            {
+            //                var registeredUser = JsonSerializer.Deserialize<User>(newUserResponse);
+            //                if (registeredUser?.UserId != null)
+            //                {
+            //                    string newUserId = registeredUser.UserId;
+            //                    await App.Current.MainPage.DisplayAlert("Register", "Account Registered", "OK");
+            //                    App.Current.MainPage = new NavigationPage(new Profile(newUserId)); // Pass UserId to constructor
+            //                }
+            //                else
+            //                {
+            //                    await App.Current.MainPage.DisplayAlert("Error", "Registration successful, but couldn't retrieve user ID.", "OK");
+            //                    App.Current.MainPage = new NavigationPage(new Profile(null)); // Or handle appropriately
+            //                }
+            //            }
+            //            catch (JsonException ex)
+            //            {
+            //                await App.Current.MainPage.DisplayAlert("Error", $"Failed to deserialize user info: {ex.Message}", "OK");
+            //                App.Current.MainPage = new NavigationPage(new Profile()); // Navigate without ID (handle in Profile)
+            //            }
+            //    }
+            //    else
+            //    {
+            //        App.Current.MainPage.DisplayAlert("Error", "Account Was Not Registered", "OK");
+            //    }
+
+
+            //}
+
+
+            #endregion
+
+            #region Error Handlers
         public string PasswordError
         {
             get => passwordError;
