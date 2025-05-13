@@ -43,9 +43,8 @@ namespace ServusAppNet8.MVVM.ViewModels
         public ICommand gotoLogin => new Command(NavtoLogin);
         public ICommand gotoReg => new Command(NavtoReg);
         public ICommand gotoLanding => new Command(NavtoLanding);
-      
-
         public ICommand LoginButton => new Command(Login);
+
         public ICommand ContinueCommand { get; }
         public ICommand RegisterButton => new Command(Register);
 
@@ -55,6 +54,7 @@ namespace ServusAppNet8.MVVM.ViewModels
         //ObservableCollection because List won't work
         public ObservableCollection<string> _listGenders;
         #endregion
+
         public UserViewModel(User user)
         {
             users = user;
@@ -64,14 +64,15 @@ namespace ServusAppNet8.MVVM.ViewModels
             _httpClient = new HttpClient();
             Password = user.Password;
         }
+
         public UserViewModel()
         {
          //   CurrentUserId = userId;
             users = new User();
             _httpClient = new HttpClient();
             DoB = DateTime.Now;
-
         }
+
         #region Mga Get Sets
 
         // First Name property with data binding
@@ -207,19 +208,12 @@ namespace ServusAppNet8.MVVM.ViewModels
         #endregion
 
         #region Login and Register Methods
-        private void NavtoReg()
-        {
-            Application.Current.MainPage = App.Services.GetRequiredService<SignupPageView>();
-        }
+        private void NavtoReg() => Application.Current.MainPage = App.Services.GetRequiredService<SignupPageView>();
 
-        private void NavtoLogin(object obj)
-        {
-            Application.Current.MainPage = App.Services.GetRequiredService<LoginPageView>();
-        }
-        private void NavtoLanding(object obj)
-        {
-            Application.Current.MainPage = App.Services.GetRequiredService<LandingPageView>();
-        }
+        private void NavtoLogin(object obj) => Application.Current.MainPage = App.Services.GetRequiredService<LoginPageView>();
+        
+        private void NavtoLanding(object obj) => Application.Current.MainPage = App.Services.GetRequiredService<LandingPageView>();
+        
         private async Task OnContinue()
         {
             if (users == null || users.UserId == null)
@@ -227,6 +221,7 @@ namespace ServusAppNet8.MVVM.ViewModels
                 await Application.Current.MainPage.DisplayAlert("Error", "User information is missing. Cannot update profile.", "OK");
                 return;
             }
+
             if (!ValidateNames())
             {
                 await Application.Current.MainPage.DisplayAlert("Error", NameError, "OK");
@@ -239,7 +234,6 @@ namespace ServusAppNet8.MVVM.ViewModels
             {
                 var contents = await response.Content.ReadAsStringAsync();
                 var users = JsonSerializer.Deserialize<List<User>>(contents);
-
                
                 //gets the userId
                    
@@ -261,8 +255,8 @@ namespace ServusAppNet8.MVVM.ViewModels
 
                 if (res.IsSuccessStatusCode)
                 {
-
-
+                    //sets the current user's ID for future usage
+                    Preferences.Set("UserId", UserId);
                     await Application.Current.MainPage.Navigation.PushAsync(new Home
                     {
                         BindingContext = this
@@ -277,21 +271,23 @@ namespace ServusAppNet8.MVVM.ViewModels
 
         private async void Login()
         {
-            // Check if username already exists
+            // Check if account exists
             var response = await _httpClient.GetAsync(baseURL);
             if (response.IsSuccessStatusCode)
             {
                 var contents = await response.Content.ReadAsStringAsync();
                 var users = JsonSerializer.Deserialize<List<User>>(contents);
 
-                //Check if username and password exists
+                //Check if account and password exists
                 if(users.Any(u => (u.Email == EmailOrPhone || u.PhoneNum == EmailOrPhone) && u.Password == Password))
                 {
                     await App.Current.MainPage.DisplayAlert("Welcome", "Welcome to Servus!", "OK");
 
                     if (users.Any(u => (string.IsNullOrEmpty(u.FirstName) || string.IsNullOrEmpty(u.LastName) || string.IsNullOrEmpty(u.Gender))))
                     {
-                       App.Current.MainPage = new NavigationPage(new Home { BindingContext = this });
+                        Preferences.Set("UserId", UserId);
+
+                        App.Current.MainPage = new NavigationPage(new Home { BindingContext = this });
                         return;
                     }
                 }
@@ -301,6 +297,7 @@ namespace ServusAppNet8.MVVM.ViewModels
                 }
             }
         }
+
         private async void Register()
         {
             if (string.IsNullOrEmpty(EmailOrPhone) || string.IsNullOrEmpty(Password))
@@ -308,6 +305,7 @@ namespace ServusAppNet8.MVVM.ViewModels
                 App.Current.MainPage.DisplayAlert("Register", "Please Enter Fields Properly", "OK");
                 return; // Exit the method if fields are empty
             }
+
             // Validate Email/Phone
             ValidateEmailOrPhone();
             if (!string.IsNullOrEmpty(EmailOrPhoneError))
@@ -315,12 +313,14 @@ namespace ServusAppNet8.MVVM.ViewModels
                 App.Current.MainPage.DisplayAlert("Register", EmailOrPhoneError, "OK");
                 return; // Exit if Email/Phone validation fails
             }
+
             // Validate Password
             if (!ValidatePassword())
             {
                 App.Current.MainPage.DisplayAlert("Register", PasswordError, "OK");
                 return; // Exit if Password validation fails
             }
+
             // Check if username already exists
             var response = await _httpClient.GetAsync(baseURL);
             if (response.IsSuccessStatusCode)
@@ -333,12 +333,14 @@ namespace ServusAppNet8.MVVM.ViewModels
                     return; // Exit if account already exists
                 }
             }
+
             // Check if passwords match
             if (Password != ConfirmPassword)
             {
                 App.Current.MainPage.DisplayAlert("Register", "Passwords Do Not Match!", "OK");
                 return; // Exit if passwords don't match
             }
+
             // Add user/register
             var newUser = new User
             {
@@ -346,13 +348,15 @@ namespace ServusAppNet8.MVVM.ViewModels
                 PhoneNum = EmailOrPhone,
                 Password = Password
             };
+
             //Changes the data into json to be readable for the API
             var json = JsonSerializer.Serialize(newUser);
             var content = new StringContent(json, Encoding.UTF8, "Application/json");
+
             //Stores into the API
             var res = await _httpClient.PostAsync(baseURL, content);
-            //Checks if the account was successfully added
 
+            //Checks if the account was successfully added
             if (res.IsSuccessStatusCode)
             {
                 var responseContent = await res.Content.ReadAsStringAsync();
@@ -361,12 +365,11 @@ namespace ServusAppNet8.MVVM.ViewModels
                 if (createdUser != null)
                 {
                     await App.Current.MainPage.DisplayAlert("Register", "Account Registered", "OK");
-
                     App.Current.MainPage = new NavigationPage(new Profile(createdUser));
                 }
                 else
                 {
-                    await App.Current.MainPage.DisplayAlert("Error", "Failed to parse created user", "OK");
+                    App.Current.MainPage.DisplayAlert("Error", "Failed to parse created user", "OK");
                 }
             }
             else
@@ -374,6 +377,7 @@ namespace ServusAppNet8.MVVM.ViewModels
                 App.Current.MainPage.DisplayAlert("Error", "Account Was Not Registered", "OK");
             }
         }
+
         //private async void Register()
         //{
         //    if (string.IsNullOrEmpty(EmailOrPhone) || string.IsNullOrEmpty(Password))
@@ -599,8 +603,7 @@ namespace ServusAppNet8.MVVM.ViewModels
         }
         #endregion
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName]string propertyName = null) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        
     }
 }
