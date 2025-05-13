@@ -48,7 +48,6 @@
                 <Image Source="market.png" Grid.Column="4" WidthRequest="30" HeightRequest="30" HorizontalOptions="Center" />
             </Grid>
 
-
             <!-- Facebook Logo + Actions -->
             <Grid BackgroundColor="White" Padding="10">
                 <Grid.ColumnDefinitions>

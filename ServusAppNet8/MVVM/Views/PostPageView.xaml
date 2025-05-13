@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodel="clr-namespace:ServusAppNet8.MVVM.ViewModels"
+             xmlns:local="clr-namespace:ServusAppNet8.MVVM.Models"
+             x:Class="ServusAppNet8.MVVM.Views.PostPageView"
+             x:DataType="local:Post">
+
+    <Grid RowDefinitions="Auto, Auto, *" Padding="15">
+        <VerticalStackLayout Grid.Row="0" Spacing="10">
+            <Label Text="Create New Post" FontSize="Large" FontAttributes="Bold" />
+
+            <Entry Placeholder="Write your caption here..."
+                   Text="{Binding Caption}"
+                   HeightRequest="100"
+                   VerticalOptions="Start" />
+
+            <Button Text="Pick Image"
+                    Command="{Binding GetImageCommand}" />
+
+            <Image Source="{Binding Picture}"
+                   HeightRequest="150"
+                   Aspect="AspectFit"
+                   IsVisible="{Binding Picture, Converter={StaticResource NotNullOrEmptyConverter}}" />
+
+            <Button Text="Post"
+                    Command="{Binding PostUploadCommand}"
+                    IsEnabled="{Binding Caption, Converter={StaticResource NotNullOrEmptyConverter}}" />
+        </VerticalStackLayout>
+
+        <CollectionView Grid.Row="2"
+                        ItemsSource="{Binding Posts}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="local:Post">
+                    <Grid Padding="10" RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="*, Auto, Auto">
+                        <Label Grid.Row="0" Grid.ColumnSpan="3"
+                               Text="{Binding UserId}"
+                               FontAttributes="Bold" />
+                        <Image Grid.Row="1" Grid.ColumnSpan="3"
+                               Source="{Binding Picture}"
+                               HeightRequest="200"
+                               Aspect="AspectFit" />
+                        <Label Grid.Row="2" Grid.ColumnSpan="3"
+                               Text="{Binding Caption}" />
+                        <Label Grid.Row="3" Grid.Column="0"
+                               Text="{Binding PostDate}"
+                               FontSize="Small"
+                               TextColor="Gray" />
+                        <Button Grid.Row="3" Grid.Column="1"
+                                Text="Update"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:PostViewModel}}, Path=PostUpdateCommand}"
+                                CommandParameter="{Binding .}"
+                                Style="{StaticResource ButtonOutline}"
+                                FontSize="Small" />
+                        <Button Grid.Row="3" Grid.Column="2"
+                                Text="Delete"
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodel:PostViewModel}}, Path=PostDeleteCommand}"
+                                CommandParameter="{Binding .}"
+                                Style="{StaticResource ButtonDanger}"
+                                FontSize="Small" />
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>
