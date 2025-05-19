@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="ServusAppNet8.MVVM.Views.PostPageView"
+             NavigationPage.HasNavigationBar="False" 
+             BackgroundColor="White"
+             Title="PostPageView">
+    <ScrollView>
+        <StackLayout Padding="10">
+
+
+            <!-- Header -->
+            <StackLayout Orientation="Horizontal" Padding="0,10">
+                <Image Source="profile.png"
+                       WidthRequest="40"
+                       HeightRequest="40"
+                       Aspect="AspectFill"
+                       VerticalOptions="Center"
+                       Margin="5"/>
+                <StackLayout >
+                    <Label Text="Alýssa Villarin" FontAttributes="Bold" />
+                    <FlexLayout  Direction="Row" Margin="0,5,0,0" >
+                        <Button Text="Tag Friends" />
+                        <Button Text="+ Album" />
+                    </FlexLayout>
+                </StackLayout>
+            </StackLayout>
+
+            <!-- Text Entry -->
+            <Editor Placeholder="What’s on your mind?"
+                    AutoSize="TextChanges"
+                    BackgroundColor="White"
+                    FontSize="18"
+                    HeightRequest="100"/>
+
+            <!-- Options -->
+            <StackLayout Spacing="15" Margin="0,20">
+                <Button Text="📷 Photo/video" BackgroundColor="Transparent" HorizontalOptions="Start" />
+                <Button Text="👤 Tag people" BackgroundColor="Transparent" HorizontalOptions="Start" />
+                <Button Text="😊 Feeling/activity" BackgroundColor="Transparent" HorizontalOptions="Start" />
+                <Button Text="📍 Check in" BackgroundColor="Transparent" HorizontalOptions="Start" />
+                <Button Text="🎥 Live video" BackgroundColor="Transparent" HorizontalOptions="Start" />
+                <Button Text="🎨 Background colour" BackgroundColor="Transparent" HorizontalOptions="Start" />
+                <Button Text="📸 Camera" BackgroundColor="Transparent" HorizontalOptions="Start" />
+                <Button Text="🎞️ GIF" BackgroundColor="Transparent" HorizontalOptions="Start" />
+            </StackLayout>
+
+            <!-- Post Button -->
+            <Button Text="POST"
+                    BackgroundColor="LightGray"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    HorizontalOptions="Center"
+                    Margin="0,20,0,0"
+                    IsEnabled="False"/>
+        </StackLayout>
+    </ScrollView>
+</ContentPage>
