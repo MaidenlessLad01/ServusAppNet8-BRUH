@@ -2,9 +2,22 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:ServusAppNet8.MVVM.ViewModels"
+             xmlns:converter="clr-namespace:ServusAppNet8.Converter"
              x:Class="ServusAppNet8.MVVM.Views.Home"
              NavigationPage.HasNavigationBar="False"
              Title="Home">
+    
+    <ContentPage.BindingContext>
+        <local:PostViewModel/>
+    </ContentPage.BindingContext>
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converter:DateOnlyConverter x:Key="DateConvert" />
+            <converter:NullToBoolConverter x:Key="NullConvert" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    
     <ScrollView>
         <VerticalStackLayout Spacing="0" Padding="0">
 
@@ -74,11 +87,11 @@
                     <Frame CornerRadius="25" WidthRequest="40" HeightRequest="40" Padding="0" HasShadow="False">
                         <Image Source="profile.png" Aspect="AspectFill" />
                     </Frame>
-                    <Button Text="What's on your mind?" HorizontalOptions="FillAndExpand"
+                    <Button Text="What's on your mind?"
                         BackgroundColor="#F0F2F5" BorderColor="LightGray"
                         CornerRadius="20" TextColor="Black"
-                        WidthRequest="280"/>
-                    <Image Source="icon_photo.png" HeightRequest="30" />
+                        WidthRequest="280"
+                        Command="{Binding navToPostPage}"/>
                 </HorizontalStackLayout>
             </Frame>
 
@@ -87,7 +100,11 @@
                 <HorizontalStackLayout Spacing="10">
                     <VerticalStackLayout WidthRequest="100">
                         <Frame BorderColor="LightGray" CornerRadius="10" HeightRequest="150">
-                            <Image Source="plus.png" HeightRequest="50" />
+                            <Image Source="plus.png" HeightRequest="50" >
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding navToPostPage}" />
+                                </Image.GestureRecognizers>
+                            </Image>
                         </Frame>
                         <Label Text="Create story" FontSize="12" HorizontalTextAlignment="Center" />
                     </VerticalStackLayout>
@@ -124,25 +141,42 @@
             </ScrollView>
 
             <!-- Post Feed -->
-            <Frame CornerRadius="10" BorderColor="LightGray" Margin="10" Padding="10">
-                <VerticalStackLayout Spacing="5">
-                    <HorizontalStackLayout Spacing="10">
-                        <Frame CornerRadius="20" WidthRequest="40" HeightRequest="40" Padding="0" HasShadow="False">
-                            <Image Source="otherprofile.png" Aspect="AspectFill" />
+            <CollectionView ItemsSource="{Binding Posts}">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame CornerRadius="10" BorderColor="LightGray" Padding="10" Margin="10,0,10,10">
+                            <VerticalStackLayout Spacing="5">
+
+                                <!-- Header: Profile Image + Name + Time -->
+                                <HorizontalStackLayout Spacing="10">
+                                    <Frame CornerRadius="20" WidthRequest="40" HeightRequest="40" Padding="0" HasShadow="False">
+                                        <Image Source="{Binding ProfileImage}" Aspect="AspectFill" />
+                                    </Frame>
+                                    <VerticalStackLayout>
+                                        <Label Text="{Binding UserName}" FontAttributes="Bold" FontSize="14" />
+                                        <Label Text="{Binding PostDate, Converter={StaticResource DateConvert}}" 
+                                               FontSize="10" 
+                                               TextColor="Gray" />
+                                    </VerticalStackLayout>
+                                </HorizontalStackLayout>
+
+                                <!-- Post Text -->
+                                <Label Text="{Binding Caption}" 
+                                       FontSize="14" 
+                                       IsVisible="{Binding Caption, Converter={StaticResource NullConvert}}"/>
+
+                                <!-- Post Images -->
+                                <Image Source="{Binding Picture}" 
+                                       Aspect="AspectFill" 
+                                       HeightRequest="200" 
+                                       Margin="0,5,0,0" 
+                                       IsVisible="{Binding Picture, Converter={StaticResource NullConvert}}"/>
+                            </VerticalStackLayout>
                         </Frame>
-                        <VerticalStackLayout>
-                            <Label Text="Dress to Impress on Roblox" FontAttributes="Bold" FontSize="14" />
-                            <Label Text="21h · Public" FontSize="10" TextColor="Gray" />
-                        </VerticalStackLayout>
-                    </HorizontalStackLayout>
-
-                    <Label Text="Very expensive in New set! Except the walk pose..." FontSize="14" />
-
-                    <!-- Post Images -->
-                    <Image Source="post1.png" Aspect="AspectFill" HeightRequest="200" Margin="0,5,0,0"/>
-                    <Image Source="post2.png" Aspect="AspectFill" HeightRequest="200" Margin="0,5,0,0"/>
-                </VerticalStackLayout>
-            </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            
 
         </VerticalStackLayout>
     </ScrollView>

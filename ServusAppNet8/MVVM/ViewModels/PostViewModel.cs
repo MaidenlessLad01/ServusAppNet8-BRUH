@@ -71,6 +71,15 @@ namespace ServusAppNet8.MVVM.ViewModels
 
         public ICommand PostUpdateCommand { get; set; }
 
+        public ICommand navToPostPage => new Command(() =>
+        {
+            Application.Current.MainPage = App.Services.GetRequiredService<CreatePostPageView>();
+        });
+
+        public ICommand gotoLanding => new Command(() => Application.Current.MainPage = App.Services.GetRequiredService<Home>());
+
+        public ICommand PickImageCommand => new Command(async() => await PickImage());
+
         #endregion
 
         public PostViewModel()
@@ -97,13 +106,15 @@ namespace ServusAppNet8.MVVM.ViewModels
 
                 Posts.Clear();
 
-                foreach (var post in Posts) Posts.Add(post);
+                foreach (var post in posts) {
+                    Posts.Add(post);
+                };
             }
         }
 
         private async Task PostUpload()
         {
-            if (string.IsNullOrWhiteSpace(Caption) || string.IsNullOrWhiteSpace(Picture)) 
+            if (string.IsNullOrWhiteSpace(Caption) && string.IsNullOrWhiteSpace(Picture)) 
             {
                 await Application.Current.MainPage.DisplayAlert("Error", "Post must not be empty", "OK");
                 return;
@@ -137,17 +148,19 @@ namespace ServusAppNet8.MVVM.ViewModels
 
                 if(createdPost != null)
                 {
-                    await App.Current.MainPage.DisplayAlert("Post", "The Post has been uploaded!", "OK");
-                    App.Current.MainPage = new NavigationPage(new Home());
+                    await Application.Current.MainPage.DisplayAlert("Success", "The Post has been uploaded!", "OK");
+                    Picture = null;
+                    Caption = null;
+                    Application.Current.MainPage = new NavigationPage(new Home());
                 }
                 else
                 {
-                    App.Current.MainPage.DisplayAlert("Error", "Failed to upload the post", "OK");
+                    Application.Current.MainPage.DisplayAlert("Error", "Failed to upload the post", "OK");
                 }
             }
             else
             {
-                App.Current.MainPage.DisplayAlert("Error", "Post was not uploaded", "OK");
+                Application.Current.MainPage.DisplayAlert("Error", "Post was not uploaded", "OK");
             }
         }
 
@@ -188,7 +201,7 @@ namespace ServusAppNet8.MVVM.ViewModels
             {
                 var stream = await fileResult.OpenReadAsync();
                 var uploadImagePath = await UploadLocalAsync(fileResult.FileName, stream);
-                // img.Source = uploadImagePath;
+                Picture = uploadImagePath;
             }
         }
 

@@ -278,16 +278,19 @@ namespace ServusAppNet8.MVVM.ViewModels
                 var contents = await response.Content.ReadAsStringAsync();
                 var users = JsonSerializer.Deserialize<List<User>>(contents);
 
+                var matchedUser = users.FirstOrDefault(u =>
+                    (u.Email == EmailOrPhone || u.PhoneNum == EmailOrPhone) && u.Password == Password);
+
                 //Check if account and password exists
-                if(users.Any(u => (u.Email == EmailOrPhone || u.PhoneNum == EmailOrPhone) && u.Password == Password))
+                if (matchedUser != null)
                 {
                     await App.Current.MainPage.DisplayAlert("Welcome", "Welcome to Servus!", "OK");
 
                     if (users.Any(u => (string.IsNullOrEmpty(u.FirstName) || string.IsNullOrEmpty(u.LastName) || string.IsNullOrEmpty(u.Gender))))
                     {
-                        Preferences.Set("UserId", UserId);
+                        Preferences.Set("UserId", matchedUser.UserId);
 
-                        App.Current.MainPage = new NavigationPage(new Home { BindingContext = this });
+                        Application.Current.MainPage = App.Services.GetRequiredService<Home>();
                         return;
                     }
                 }
