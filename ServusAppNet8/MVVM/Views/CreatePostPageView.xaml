@@ -13,15 +13,23 @@
             <ImageButton x:Name="BackButton" Margin="20,20,0,0" WidthRequest="25" 
           HeightRequest="25" HorizontalOptions="Start"  Command="{Binding gotoLanding}"  VerticalOptions="Center">
                 <ImageButton.Source>
-                    <FontImageSource FontFamily="icon" Glyph="&#xe800;" Size="30" Color="Gray"/>
+                    <FontImageSource FontFamily="icon" 
+                                     Glyph="&#xe800;" 
+                                     Size="30" 
+                                     Color="Gray"/>
                 </ImageButton.Source>
             </ImageButton>
-            <Entry Text="{Binding Caption}" x:Name="TitleEntry" Placeholder="Enter title" />
+            <Entry Text="{Binding Caption}" 
+                   x:Name="TitleEntry" 
+                   Placeholder="Enter title" />
 
             <Label Text="Photo" FontAttributes="Bold" />
             <Image 
                 Source="{Binding Picture}"
-                x:Name="SelectedImage" HeightRequest="200" Aspect="AspectFill" BackgroundColor="LightGray" />
+                x:Name="SelectedImage" 
+                HeightRequest="200" 
+                Aspect="AspectFill" 
+                BackgroundColor="LightGray" />
 
             <Button Text="Add Photo" Command="{Binding PickImageCommand}"/>
 

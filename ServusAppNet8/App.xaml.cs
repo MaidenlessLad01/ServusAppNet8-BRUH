@@ -11,7 +11,7 @@ namespace ServusAppNet8
         {
             InitializeComponent();
             Services = serviceProvider;
-            MainPage = new NavigationPage(new PostPageView());
+            MainPage = new NavigationPage(new LandingPageView());
            
         }
     }
