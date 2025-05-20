@@ -257,10 +257,7 @@ namespace ServusAppNet8.MVVM.ViewModels
                 {
                     //sets the current user's ID for future usage
                     Preferences.Set("UserId", UserId);
-                    await Application.Current.MainPage.Navigation.PushAsync(new Home
-                    {
-                        BindingContext = this
-                    });
+                    Application.Current.MainPage = App.Services.GetRequiredService<Home>();
                 }
                 else
                 {

@@ -153,6 +153,7 @@ namespace ServusAppNet8.MVVM.ViewModels
                 return;
             }
 
+            //Gets the current user's Id for the post
             var userId = Preferences.Get("UserId", string.Empty);
 
             var newPost = new Post
@@ -161,8 +162,11 @@ namespace ServusAppNet8.MVVM.ViewModels
                 PostDate = DateTime.Now
             };
 
+            //If picture or caption is not empty, then it will be added to the api
             if (Picture != null)
-                newPost.Picture = Picture;
+            { 
+                newPost.Picture = Picture; 
+            }
 
             if(Caption != null)
                 newPost.Caption = Caption;
@@ -198,6 +202,18 @@ namespace ServusAppNet8.MVVM.ViewModels
             {
                 Application.Current.MainPage.DisplayAlert("Error", "Post was not uploaded", "OK");
             }
+        }
+
+        //Change the image into base64
+        private async Task<string> ConvertImageToBase64(FileResult file)
+        {
+            if (file == null) return null;
+
+            using var stream = await file.OpenReadAsync();
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            var bytes = ms.ToArray();
+            return Convert.ToBase64String(bytes);
         }
 
         //Deletes post from the api
