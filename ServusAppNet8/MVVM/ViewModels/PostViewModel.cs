@@ -70,7 +70,7 @@ namespace ServusAppNet8.MVVM.ViewModels
 
         public ICommand PostDeleteCommand { get; set; }
 
-        public ICommand PostUpdateCommand { get; set; }
+        public ICommand PostUpdateCommand { get; }
 
         public ICommand navToPostPage => new Command(() =>
         {
@@ -182,8 +182,11 @@ namespace ServusAppNet8.MVVM.ViewModels
                 if(createdPost != null)
                 {
                     await Application.Current.MainPage.DisplayAlert("Success", "The Post has been uploaded!", "OK");
+
+                    //Sets the picture and caption to null before going to homepage
                     Picture = null;
                     Caption = null;
+
                     Application.Current.MainPage = new NavigationPage(new Home());
                 }
                 else
@@ -221,10 +224,26 @@ namespace ServusAppNet8.MVVM.ViewModels
             }
         }
 
+        //Updates the post
         private async void PostUpdate(PostUser post)
         {
-            await Application.Current.MainPage.DisplayAlert("Error", "lmao", "OK");
-            return;
+            if (post == null) return;
+
+            PostWithUser.Clear();
+
+            //Deletes the post on the API
+            var res = await _httpClient.DeleteAsync($"{baseURL}/Post/{post.PostId}");
+
+            if (res.IsSuccessStatusCode)
+            {
+                //Deletes the current post from the list after deleting it on the API
+                PostWithUser.Remove(post);
+                await Application.Current.MainPage.DisplayAlert("Success", "Post deleted.", "OK");
+            }
+            else
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", "Failed to delete post.", "OK");
+            }
         }
 
         //Picks an image from the local file system

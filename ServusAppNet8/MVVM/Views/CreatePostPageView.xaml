@@ -4,6 +4,7 @@
              xmlns:local="clr-namespace:ServusAppNet8.MVVM.ViewModels"
              x:Class="ServusAppNet8.MVVM.Views.CreatePostPageView"
              Title="Create New Page">
+    
     <ContentPage.BindingContext>
         <local:PostViewModel/>
     </ContentPage.BindingContext>
