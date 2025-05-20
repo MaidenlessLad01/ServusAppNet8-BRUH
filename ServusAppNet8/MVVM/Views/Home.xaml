@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:ServusAppNet8.MVVM.ViewModels"
+             x:Name="HomePage"
              xmlns:converter="clr-namespace:ServusAppNet8.Converter"
              x:Class="ServusAppNet8.MVVM.Views.Home"
              NavigationPage.HasNavigationBar="False"
@@ -141,7 +142,7 @@
             </ScrollView>
 
             <!-- Post Feed -->
-            <CollectionView ItemsSource="{Binding Posts}">
+            <CollectionView ItemsSource="{Binding PostWithUser}">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Frame CornerRadius="10" BorderColor="LightGray" Padding="10" Margin="10,0,10,10">
@@ -158,6 +159,15 @@
                                                FontSize="10" 
                                                TextColor="Gray" />
                                     </VerticalStackLayout>
+                                    <Button Text="Delete" 
+                                            TextColor="Red"
+                                            IsVisible="{Binding SameUser}"
+                                            Command="{Binding BindingContext.PostDeleteCommand, Source={x:Reference Name=HomePage}}"
+                                            CommandParameter="{Binding .}"/>
+                                    <Button Text="Update" 
+                                            TextColor="Red"
+                                            IsVisible="{Binding SameUser}"
+                                            Command="{Binding PostUpdateCommand}"/>
                                 </HorizontalStackLayout>
 
                                 <!-- Post Text -->

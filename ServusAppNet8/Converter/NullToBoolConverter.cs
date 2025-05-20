@@ -9,7 +9,7 @@ namespace ServusAppNet8.Converter
 {
     internal class NullToBoolConverter : IValueConverter
     {
-        //Makes it that if the if the caption or post is empty, then it doesn't show it to the user
+        //Makes it so that the post will only properly show what info it has
         public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture) => 
             !string.IsNullOrEmpty(value?.ToString());
 

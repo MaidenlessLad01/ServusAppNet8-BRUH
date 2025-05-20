@@ -17,10 +17,11 @@ namespace ServusAppNet8.MVVM.ViewModels
     {
         #region Variable Declaration
 
-        public string baseURL = "https://68107efd27f2fdac241199ad.mockapi.io/Post";
+        public string baseURL = "https://68107efd27f2fdac241199ad.mockapi.io/";
         private HttpClient _httpClient;
 
-        public ObservableCollection<Post> Posts { get; set; } = new ObservableCollection<Post>();
+        //Get all users and posts
+        public ObservableCollection<PostUser> PostWithUser { get; set; } = new ObservableCollection<PostUser>();
 
         private string? _caption, _picture;
         private DateTime _postDate;
@@ -86,29 +87,61 @@ namespace ServusAppNet8.MVVM.ViewModels
         {
             _httpClient = new HttpClient();
 
-            PostDeleteCommand = new Command<Post>(PostDelete);
-            PostUpdateCommand = new Command<Post>(PostUpdate);
+            PostDeleteCommand = new Command<PostUser>(PostDelete);
+            PostUpdateCommand = new Command<PostUser>(PostUpdate);
 
             GetPosts();
         }
 
         private async void GetPosts()
         {
-            var res = await _httpClient.GetAsync(baseURL);
+            //Get all posts
+            var resPosts = await _httpClient.GetAsync($"{baseURL}/Post");
+            var posts = new List<Post>();
             
-            if(res.IsSuccessStatusCode)
+            if(resPosts.IsSuccessStatusCode)
             {
-                var json = await res.Content.ReadAsStringAsync();
-                var posts = JsonSerializer.Deserialize<List<Post>>(json, new JsonSerializerOptions
+                var json = await resPosts.Content.ReadAsStringAsync();
+                posts = JsonSerializer.Deserialize<List<Post>>(json, new JsonSerializerOptions
                 {
                     PropertyNameCaseInsensitive = true
                 });
+            }
 
-                Posts.Clear();
+            //Get all users
+            var resUsers = await _httpClient.GetAsync($"{baseURL}/User");
+            var users = new List<User>();
 
-                foreach (var post in posts) {
-                    Posts.Add(post);
-                };
+            if (resUsers.IsSuccessStatusCode) 
+            {
+                var json = await resUsers.Content.ReadAsStringAsync();
+                users = JsonSerializer.Deserialize<List<User>>(json, new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                });
+            }
+
+            //Get the current users UserId
+            var userId = Preferences.Get("UserId", string.Empty);
+
+            //Merge the needed information into one
+            var merged = from post in posts
+                         join user in users on post.UserId equals user.UserId
+                         select new PostUser
+                         {
+                             UserName = $"{user.FirstName} {user.LastName}",
+                             Caption = post.Caption,
+                             Picture = post.Picture,
+                             PostDate = post.PostDate,
+                             PostId = post.PostId,
+                             SameUser = (user.UserId == userId)
+                         };
+
+            PostWithUser.Clear();
+
+            foreach(var item in merged)
+            {
+                PostWithUser.Add(item);
             }
         }
 
@@ -138,7 +171,7 @@ namespace ServusAppNet8.MVVM.ViewModels
             var json = JsonSerializer.Serialize(newPost);
             var content = new StringContent(json, Encoding.UTF8, "Application/json");
 
-            var res = await _httpClient.PostAsync(baseURL, content);
+            var res = await _httpClient.PostAsync($"{baseURL}/Post", content);
 
             if(res.IsSuccessStatusCode)
             {
@@ -164,7 +197,8 @@ namespace ServusAppNet8.MVVM.ViewModels
             }
         }
 
-        private async void PostDelete(Post post)
+        //Deletes post from the api
+        private async void PostDelete(PostUser post)
         {
             if (post == null) return;
 
@@ -173,16 +207,21 @@ namespace ServusAppNet8.MVVM.ViewModels
             if (!confirmed) return;
 
             //Deletes the post on the API
-            var res = await _httpClient.DeleteAsync($"{baseURL}/{post.PostId}");
+            var res = await _httpClient.DeleteAsync($"{baseURL}/Post/{post.PostId}");
 
             if (res.IsSuccessStatusCode)
             {
                 //Deletes the current post from the list after deleting it on the API
-                Posts.Remove(post);
+                PostWithUser.Remove(post);
+                await Application.Current.MainPage.DisplayAlert("Success", "Post deleted.", "OK");
+            }
+            else
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", "Failed to delete post.", "OK");
             }
         }
 
-        private async void PostUpdate(Post post)
+        private async void PostUpdate(PostUser post)
         {
             await Application.Current.MainPage.DisplayAlert("Error", "lmao", "OK");
             return;

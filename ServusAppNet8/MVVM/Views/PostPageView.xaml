@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ServusAppNet8.MVVM.ViewModels"
              x:Class="ServusAppNet8.MVVM.Views.PostPageView"
              NavigationPage.HasNavigationBar="False" 
              BackgroundColor="White"
              Title="PostPageView">
+
+    <ContentPage.BindingContext>
+        <local:PostViewModel/>
+    </ContentPage.BindingContext>
+
     <ScrollView>
         <StackLayout Padding="10">
-
-
             <!-- Header -->
             <StackLayout Orientation="Horizontal" Padding="0,10">
                 <Image Source="profile.png"
