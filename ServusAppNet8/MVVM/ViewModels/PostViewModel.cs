@@ -92,9 +92,9 @@ namespace ServusAppNet8.MVVM.ViewModels
             // Initialize Cloudinary here (if not using DI)
             _cloudinary = new CloudinaryDotNet.Cloudinary(
                 new CloudinaryDotNet.Account(
-                    "YOUR_CLOUD_NAME", // Replace with your Cloudinary Cloud Name
-                    "YOUR_API_KEY",    // Replace with your Cloudinary API Key
-                    "YOUR_API_SECRET"  // Replace with your Cloudinary API Secret
+                    "dvpu1zjo1", // Replace with your Cloudinary Cloud Name
+                    "129476462218521",    // Replace with your Cloudinary API Key
+                    "f6fTvQJh6TlVGyS1u56kfv5vqkA"  // Replace with your Cloudinary API Secret
                 )
             );
 
@@ -251,7 +251,8 @@ namespace ServusAppNet8.MVVM.ViewModels
 
                 if (uploadResult != null && !string.IsNullOrEmpty(uploadResult.Url.ToString()))
                 {
-                    Picture = uploadResult.Url.ToString(); // Set Picture to the Cloudinary URL
+                    string secureUrl = uploadResult.Url.ToString().Replace("http://", "https://");
+                    Picture = secureUrl; // Set Picture to the HTTPS Cloudinary URL
                 }
                 else
                 {

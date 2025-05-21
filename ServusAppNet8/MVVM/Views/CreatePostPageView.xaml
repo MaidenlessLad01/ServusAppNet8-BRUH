@@ -2,43 +2,49 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:ServusAppNet8.MVVM.ViewModels"
+             xmlns:converters="clr-namespace:ServusAppNet8.Converter" 
              x:Class="ServusAppNet8.MVVM.Views.CreatePostPageView"
-             Title="Create New Page">
-    
+             Title="Create New Post">
     <ContentPage.BindingContext>
         <local:PostViewModel/>
     </ContentPage.BindingContext>
 
+    <ContentPage.Resources>
+        <converters:NullToBoolConverter x:Key="NullOrEmptyBoolConverter"/>
+    </ContentPage.Resources>
+
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="15">
-            <ImageButton x:Name="BackButton" Margin="20,20,0,0" WidthRequest="25" 
-          HeightRequest="25" HorizontalOptions="Start"  Command="{Binding gotoLanding}"  VerticalOptions="Center">
+            <ImageButton x:Name="BackButton" Margin="20,20,0,0" WidthRequest="25"
+                         HeightRequest="25" HorizontalOptions="Start"
+                         Command="{Binding gotoLanding}" VerticalOptions="Center">
                 <ImageButton.Source>
-                    <FontImageSource FontFamily="icon" 
-                                     Glyph="&#xe800;" 
-                                     Size="30" 
+                    <FontImageSource FontFamily="icon"
+                                     Glyph="&#xe800;"
+                                     Size="30"
                                      Color="Gray"/>
                 </ImageButton.Source>
             </ImageButton>
-            <Entry Text="{Binding Caption}" 
-                   x:Name="TitleEntry" 
-                   Placeholder="Enter title" />
 
-            <Label Text="Photo" FontAttributes="Bold" />
-            <Image 
-                Source="{Binding Picture}"
-                x:Name="SelectedImage" 
-                HeightRequest="200" 
-                Aspect="AspectFill" 
-                BackgroundColor="LightGray" />
+            <Entry Text="{Binding Caption}"
+                   x:Name="TitleEntry"
+                   Placeholder="Enter your caption here" />
+            <Label Text="Selected Photo Preview" FontAttributes="Bold" Margin="0,10,0,0"/>
+            <Label Text="{Binding Picture}" FontSize="Small" TextColor="Red" />
+            <Image Source="{Binding Picture}"
+                   x:Name="SelectedImage"
+                   HeightRequest="200"
+                   Aspect="AspectFit" BackgroundColor="LightGray"
+                   HorizontalOptions="FillAndExpand"
+                   IsVisible="{Binding Picture, Converter={StaticResource NullOrEmptyBoolConverter}}" />
+            <Button Text="Add Photo" Command="{Binding PickImageCommand}" />
 
-            <Button Text="Add Photo" Command="{Binding PickImageCommand}"/>
-
-            <Button Text="Create Post" 
-                    BackgroundColor="DarkBlue" 
-                    TextColor="White" 
-                    Command="{Binding PostUploadCommand}"/>
-
+            <Button Text="Create Post"
+                    BackgroundColor="DarkBlue"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    Command="{Binding PostUploadCommand}"
+                    IsEnabled="{Binding IsPostingEnabled}"/>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>
