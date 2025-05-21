@@ -234,8 +234,6 @@ namespace ServusAppNet8.MVVM.ViewModels
             {
                 var contents = await response.Content.ReadAsStringAsync();
                 var users = JsonSerializer.Deserialize<List<User>>(contents);
-               
-                //gets the userId
                    
                 var additionalDetails = new User
                 {

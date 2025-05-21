@@ -23,7 +23,7 @@ namespace ServusAppNet8.MVVM.ViewModels
         //Get all users and posts
         public ObservableCollection<PostUser> PostWithUser { get; set; } = new ObservableCollection<PostUser>();
 
-        private string? _caption, _picture;
+        private string? _caption, _picture, postId;
         private DateTime _postDate;
 
         #endregion
@@ -191,7 +191,7 @@ namespace ServusAppNet8.MVVM.ViewModels
                     Picture = null;
                     Caption = null;
 
-                    Application.Current.MainPage = new NavigationPage(new Home());
+                    Application.Current.MainPage = App.Services.GetRequiredService<Home>();
                 }
                 else
                 {
@@ -241,25 +241,41 @@ namespace ServusAppNet8.MVVM.ViewModels
         }
 
         //Updates the post
-        private async void PostUpdate(PostUser post)
+        private async void PostUpdate()
         {
-            if (post == null) return;
+            var postChanges = new Post
+            {
+                Picture = Picture,
+                Caption = Caption
+            };
 
-            PostWithUser.Clear();
+            var json = JsonSerializer.Serialize(postChanges);
+            var content = new StringContent(json, Encoding.UTF8, "Application/json");
 
-            //Deletes the post on the API
-            var res = await _httpClient.DeleteAsync($"{baseURL}/Post/{post.PostId}");
+            var res = await _httpClient.PutAsync($"{baseURL}/Post/{postId}", content);
 
             if (res.IsSuccessStatusCode)
             {
-                //Deletes the current post from the list after deleting it on the API
-                PostWithUser.Remove(post);
-                await Application.Current.MainPage.DisplayAlert("Success", "Post deleted.", "OK");
+                //Gets the posts from the api before the notification
+                GetPosts();
+                await Application.Current.MainPage.DisplayAlert("Success", "Post updated.", "OK");
+                Application.Current.MainPage = App.Services.GetRequiredService<Home>();
             }
             else
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Failed to delete post.", "OK");
+                await Application.Current.MainPage.DisplayAlert("Error", "Post was not updated.", "OK");
             }
+        }
+
+        //Goes to update page with the post id
+        private async void NavToUpdate(PostUser post)
+        {
+            postId = post.PostId;
+
+            Picture = post.Picture;
+            Caption = post.Caption;
+
+            Application.Current.MainPage = App.Services.GetRequiredService<UpdatePost>();
         }
 
         //Picks an image from the local file system
