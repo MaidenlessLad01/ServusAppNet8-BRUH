@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ServusAppNet8.MVVM.ViewModels"
+             x:Class="ServusAppNet8.MVVM.Views.UpdatePost"
+             Title="UpdatePost">
+
+    <ContentPage.BindingContext>
+        <local:PostViewModel/>
+    </ContentPage.BindingContext>
+
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+            <ImageButton x:Name="BackButton" 
+                         Margin="20,20,0,0" 
+                         WidthRequest="25" 
+                         HeightRequest="25" 
+                         HorizontalOptions="Start"  
+                         Command="{Binding gotoLanding}"  
+                         VerticalOptions="Center">
+                <ImageButton.Source>
+                    <FontImageSource FontFamily="icon" 
+                                 Glyph="&#xe800;" 
+                                 Size="30" 
+                                 Color="Gray"/>
+                </ImageButton.Source>
+            </ImageButton>
+            <Entry Text="{Binding Caption}" 
+                   x:Name="TitleEntry" 
+                   Placeholder="Enter title" />
+
+            <Label Text="Photo" FontAttributes="Bold" />
+            <Image 
+                Source="{Binding Picture}"
+                x:Name="SelectedImage" 
+                HeightRequest="200" 
+                Aspect="AspectFill" 
+                BackgroundColor="LightGray" />
+
+            <Button Text="Add Photo" Command="{Binding PickImageCommand}"/>
+
+            <Button Text="Update Post" 
+                    BackgroundColor="DarkBlue" 
+                    TextColor="White" 
+                    Command="{Binding PostUpdateCommand}"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
