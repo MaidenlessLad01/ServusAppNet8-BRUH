@@ -164,7 +164,8 @@
                                     <Button Text="Update" 
                                             TextColor="Red"
                                             IsVisible="{Binding SameUser}"
-                                            Command="{Binding PostUpdateCommand}"/>
+                                            Command="{Binding BindingContext.goToUpdate, Source={x:Reference Name=HomePage}}"
+                                            CommandParameter="{Binding .}"/>
                                 </HorizontalStackLayout>
 
                                 <!-- Post Text -->

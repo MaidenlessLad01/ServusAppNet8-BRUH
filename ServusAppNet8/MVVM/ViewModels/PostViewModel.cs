@@ -22,11 +22,11 @@ namespace ServusAppNet8.MVVM.ViewModels
         public string baseURL = "https://68107efd27f2fdac241199ad.mockapi.io/";
         private HttpClient _httpClient;
         private CloudinaryDotNet.Cloudinary _cloudinary; // Cloudinary instance
-
+        private PostUser _postToUpdate;
         //Get all users and posts
         public ObservableCollection<PostUser> PostWithUser { get; set; } = new ObservableCollection<PostUser>();
 
-        private string? _caption, _picture;
+        private string? _caption, _picture, postId;
         private DateTime _postDate;
 
         #endregion
@@ -84,6 +84,8 @@ namespace ServusAppNet8.MVVM.ViewModels
 
         public ICommand PickImageCommand => new Command(async () => await PickImage());
 
+        public ICommand goToUpdate => new Command<PostUser>((post) => NavToUpdate(post));
+
         #endregion
 
         public PostViewModel()
@@ -99,8 +101,8 @@ namespace ServusAppNet8.MVVM.ViewModels
             );
 
             PostDeleteCommand = new Command<PostUser>(PostDelete);
-            PostUpdateCommand = new Command<PostUser>(PostUpdate);
-
+            //PostUpdateCommand = new Command<PostUser>(PostUpdate);
+            PostUpdateCommand = new Command(async () => await PostUpdate());
             GetPosts();
         }
 
@@ -285,27 +287,6 @@ namespace ServusAppNet8.MVVM.ViewModels
 
             if (!confirmed) return;
 
-            // In a real application, you might want to delete the image from Cloudinary as well
-            // if (post.Picture != null && post.Picture.Contains("res.cloudinary.com"))
-            // {
-            //     try
-            //     {
-            //         var publicId = GetPublicIdFromCloudinaryUrl(post.Picture);
-            //         if (!string.IsNullOrEmpty(publicId))
-            //         {
-            //             var deletionResult = await _cloudinary.DestroyAsync(new DeletionParams(publicId));
-            //             if (deletionResult.Result != "ok")
-            //             {
-            //                 Console.WriteLine($"Warning: Failed to delete image from Cloudinary: {deletionResult.Error?.Message}");
-            //             }
-            //         }
-            //     }
-            //     catch (Exception ex)
-            //     {
-            //         Console.WriteLine($"Error deleting from Cloudinary: {ex.Message}");
-            //     }
-            // }
-
             //Deletes the post on the API
             var res = await _httpClient.DeleteAsync($"{baseURL}/Post/{post.PostId}");
 
@@ -338,58 +319,61 @@ namespace ServusAppNet8.MVVM.ViewModels
 
 
         //Updates the post
-        private async void PostUpdate(PostUser post)
+        private async Task PostUpdate()
         {
-            if (post == null) return;
+            var postChanges = new Post
+            {
+                Picture = Picture,
+                Caption = Caption
+            };
 
-            // This method currently deletes the post and then re-fetches all posts.
-            // For a proper update, you'd typically have a separate update mechanism
-            // where the user can modify the caption or replace the image.
-            // If replacing the image, you'd upload the new image to Cloudinary and
-            // then update the Post record in MockAPI.io with the new Cloudinary URL.
+            var json = JsonSerializer.Serialize(postChanges);
+            var content = new StringContent(json, Encoding.UTF8, "Application/json");
 
-            PostWithUser.Clear(); // Clear the collection to refetch, this seems part of your current update logic.
-
-            // Here's where you'd typically implement the actual update logic.
-            // Example:
-            // var updatedPost = new Post
-            // {
-            //     PostId = post.PostId,
-            //     UserId = Preferences.Get("UserId", string.Empty), // Assuming userId is stored
-            //     Caption = post.Caption, // User might edit this in a UI
-            //     Picture = post.Picture, // New picture URL if changed, otherwise old one
-            //     PostDate = post.PostDate // Keep original post date or update to DateTime.Now
-            // };
-
-            // var json = JsonSerializer.Serialize(updatedPost);
-            // var content = new StringContent(json, Encoding.UTF8, "Application/json");
-            // var res = await _httpClient.PutAsync($"{baseURL}/Post/{post.PostId}", content);
-
-            // if (res.IsSuccessStatusCode)
-            // {
-            //     await Application.Current.MainPage.DisplayAlert("Success", "Post updated.", "OK");
-            //     GetPosts(); // Refresh posts after update
-            // }
-            // else
-            // {
-            //     await Application.Current.MainPage.DisplayAlert("Error", "Failed to update post.", "OK");
-            // }
-
-            // Your existing delete logic for update is below, which might not be what you intend for "update"
-            var res = await _httpClient.DeleteAsync($"{baseURL}/Post/{post.PostId}");
+            var res = await _httpClient.PutAsync($"{baseURL}/Post/{postId}", content);
 
             if (res.IsSuccessStatusCode)
             {
-                PostWithUser.Remove(post);
-                await Application.Current.MainPage.DisplayAlert("Success", "Post deleted.", "OK");
+                ////Gets the posts from the api before the notification
+                //GetPosts();
+                //await Application.Current.MainPage.DisplayAlert("Success", "Post updated.", "OK");
+                //Application.Current.MainPage = App.Services.GetRequiredService<Home>();
+
+                // Update the PostUser object in the collection
+                if (_postToUpdate != null)
+                {
+                    _postToUpdate.Picture = Picture; // Update properties directly
+                    _postToUpdate.Caption = Caption;
+
+                    // Notify the UI that the collection has changed (if necessary)
+                    OnPropertyChanged(nameof(PostWithUser)); // If PostWithUser is bound to the UI
+                }
+
+                await Application.Current.MainPage.DisplayAlert("Success", "Post updated.", "OK");
+
+                // Navigate back to the Home page (if needed)
+                Application.Current.MainPage = App.Services.GetRequiredService<Home>();
             }
             else
             {
-                await Application.Current.MainPage.DisplayAlert("Error", "Failed to delete post.", "OK");
+                await Application.Current.MainPage.DisplayAlert("Error", "Post was not updated.", "OK");
             }
-            GetPosts(); // Re-fetch all posts after the "update" (delete + refresh)
         }
 
+        //Goes to update page with the post id
+        private async void NavToUpdate(PostUser post)
+        {
+            postId = post.PostId;
+            Picture = post.Picture;
+            Caption = post.Caption;
+
+            // Store the PostUser object
+            _postToUpdate = post; // Add a private field _postToUpdate to your ViewModel
+
+            var updatePostPage = App.Services.GetRequiredService<UpdatePost>();
+            updatePostPage.BindingContext = this; // Set the current ViewModel as the BindingContext
+            Application.Current.MainPage = updatePostPage;
+        }
 
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null) =>

@@ -30,6 +30,7 @@ namespace ServusAppNet8
             builder.Services.AddSingleton<Home>();
             builder.Services.AddSingleton<SplashPage>();
             builder.Services.AddSingleton<CreatePostPageView>();
+            builder.Services.AddSingleton<UpdatePost>();
             builder.Services.AddSingleton(new CloudinaryDotNet.Cloudinary(
                 new CloudinaryDotNet.Account(
                     "dvpu1zjo1", // Replace with your Cloudinary Cloud Name
