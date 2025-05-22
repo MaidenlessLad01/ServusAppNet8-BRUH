@@ -22,22 +22,24 @@ namespace ServusAppNet8.MVVM.ViewModels
         #region Variables and Commands
         //var declaration
         public User users { get; set; }
-        //public string UserId { get; set; }
+
         private string _selectedGender;
-        //public string SelectedGender { get; set; }
         private string emailOrPhone;
         private string _password;
         private string _fName;
         private string _lName;
         private string nameError;
+
         private DateTime _dob = DateTime.Now;
-        public string CurrentUserId { get; private set; } // Make it a property
+
         private string passwordError;
         private string signUpError;
         private string emailOrPhoneError;
         private string _confirmpass;
 
         public string UserId => users?.UserId; // Expose UserId
+
+        private bool _isPasswordVisible, _isPasswordVisible2;
         
         //Commands for logging in and registering
         public ICommand gotoLogin => new Command(NavtoLogin);
@@ -47,6 +49,10 @@ namespace ServusAppNet8.MVVM.ViewModels
 
         public ICommand ContinueCommand { get; }
         public ICommand RegisterButton => new Command(Register);
+
+        public ICommand TogglePasswordVisibilityCommand => new Command(() => IsPasswordVisible = !IsPasswordVisible);
+
+        public ICommand TogglePasswordVisibilityCommand2 => new Command(() => IsPasswordVisible2 = !IsPasswordVisible2);
 
         public string baseURL = "https://68107efd27f2fdac241199ad.mockapi.io/User";
         private HttpClient _httpClient;
@@ -59,15 +65,28 @@ namespace ServusAppNet8.MVVM.ViewModels
         {
             users = user;
             EmailOrPhone = user.Email ?? user.PhoneNum;
-            ListGenders = new ObservableCollection<string> { "Male", "Female", "Shopping Cart", "Godzilla", "Walmart Bag", "Attack Helicopter", "Prefer Not To Say" };
+
+            //All the possible gender choices
+            ListGenders = new ObservableCollection<string> 
+            { 
+                "Male", 
+                "Female", 
+                "Shopping Cart", 
+                "Godzilla", 
+                "Walmart Bag", 
+                "Attack Helicopter", 
+                "Prefer Not To Say" 
+            };
+
             ContinueCommand = new Command(async () => await OnContinue());
+
             _httpClient = new HttpClient();
             Password = user.Password;
         }
 
         public UserViewModel()
         {
-         //   CurrentUserId = userId;
+            //CurrentUserId = userId;
             users = new User();
             _httpClient = new HttpClient();
             DoB = DateTime.Now;
@@ -105,6 +124,7 @@ namespace ServusAppNet8.MVVM.ViewModels
                 OnPropertyChanged(nameof(SelectedGender));
             }
         }
+
         // Date of Birth property with data binding
         public DateTime DoB
         {
@@ -158,6 +178,27 @@ namespace ServusAppNet8.MVVM.ViewModels
             {
                 _listGenders = value;
                 OnPropertyChanged(nameof(ListGenders));
+            }
+        }
+
+        //Password visibility
+        public bool IsPasswordVisible
+        {
+            get => _isPasswordVisible;
+            set
+            {
+                _isPasswordVisible = value;
+                OnPropertyChanged(nameof(IsPasswordVisible));
+            }
+        }
+
+        public bool IsPasswordVisible2
+        {
+            get => _isPasswordVisible2;
+            set
+            {
+                _isPasswordVisible2 = value;
+                OnPropertyChanged(nameof(IsPasswordVisible2));
             }
         }
 
@@ -216,6 +257,7 @@ namespace ServusAppNet8.MVVM.ViewModels
         
         private async Task OnContinue()
         {
+            //Check if the users and userId is null
             if (users == null || users.UserId == null)
             {
                 await Application.Current.MainPage.DisplayAlert("Error", "User information is missing. Cannot update profile.", "OK");
@@ -232,11 +274,6 @@ namespace ServusAppNet8.MVVM.ViewModels
 
             if (response.IsSuccessStatusCode)
             {
-                var contents = await response.Content.ReadAsStringAsync();
-                var users = JsonSerializer.Deserialize<List<User>>(contents);
-               
-                //gets the userId
-                   
                 var additionalDetails = new User
                 {
                     Email = EmailOrPhone,
@@ -275,6 +312,7 @@ namespace ServusAppNet8.MVVM.ViewModels
                 var contents = await response.Content.ReadAsStringAsync();
                 var users = JsonSerializer.Deserialize<List<User>>(contents);
 
+                //Gets the first user that matches
                 var matchedUser = users.FirstOrDefault(u =>
                     (u.Email == EmailOrPhone || u.PhoneNum == EmailOrPhone) && u.Password == Password);
 
@@ -285,10 +323,9 @@ namespace ServusAppNet8.MVVM.ViewModels
 
                     if (users.Any(u => (string.IsNullOrEmpty(u.FirstName) || string.IsNullOrEmpty(u.LastName) || string.IsNullOrEmpty(u.Gender))))
                     {
+                        //sets the current user's ID for future usage
                         Preferences.Set("UserId", matchedUser.UserId);
-
                         Application.Current.MainPage = App.Services.GetRequiredService<Home>();
-                        return;
                     }
                 }
                 else
@@ -476,7 +513,7 @@ namespace ServusAppNet8.MVVM.ViewModels
 
             #endregion
 
-            #region Error Handlers
+        #region Error Handlers
         public string PasswordError
         {
             get => passwordError;

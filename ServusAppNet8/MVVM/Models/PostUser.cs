@@ -9,7 +9,6 @@ namespace ServusAppNet8.MVVM.Models
     //Model for the post on home that needs information from both User and Post
     public class PostUser
     {
-        public string ProfileImage { get; set; }
         public string UserName { get; set; }
         public DateTime PostDate { get; set; }
         public string? Caption { get; set; }

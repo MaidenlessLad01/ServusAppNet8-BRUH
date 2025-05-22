@@ -22,6 +22,7 @@
     <ScrollView>
         <VerticalStackLayout Spacing="0" Padding="0">
 
+            <!--For aesthetic only-->
             <Grid Padding="10" ColumnSpacing="20">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -62,7 +63,7 @@
                 <Image Source="market.png" Grid.Column="4" WidthRequest="30" HeightRequest="30" HorizontalOptions="Center" />
             </Grid>
 
-            <!-- Facebook Logo + Actions -->
+            <!--For aesthetics only-->
             <Grid BackgroundColor="White" Padding="10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -149,24 +150,35 @@
                             <VerticalStackLayout Spacing="5">
 
                                 <!-- Header: Profile Image + Name + Time -->
-                                <HorizontalStackLayout Spacing="10">
-                                    <VerticalStackLayout>
-                                        <Label Text="{Binding UserName}" FontAttributes="Bold" FontSize="14" />
-                                        <Label Text="{Binding PostDate, Converter={StaticResource DateConvert}}" 
-                                               FontSize="10" 
-                                               TextColor="Gray" />
-                                    </VerticalStackLayout>
-                                    <Button Text="Delete" 
-                                            TextColor="Red"
-                                            IsVisible="{Binding SameUser}"
-                                            Command="{Binding BindingContext.PostDeleteCommand, Source={x:Reference Name=HomePage}}"
-                                            CommandParameter="{Binding .}"/>
-                                    <Button Text="Update" 
-                                            TextColor="Red"
-                                            IsVisible="{Binding SameUser}"
-                                            Command="{Binding BindingContext.goToUpdate, Source={x:Reference Name=HomePage}}"
-                                            CommandParameter="{Binding .}"/>
-                                </HorizontalStackLayout>
+                                <Grid ColumnDefinitions="Auto, *, Auto">
+                                    <HorizontalStackLayout Grid.Column="0" Spacing="10" VerticalOptions="Center">
+                                        <VerticalStackLayout>
+                                            <Label Text="{Binding UserName}" 
+                                                   FontAttributes="Bold" 
+                                                   FontSize="14" />
+                                            <Label Text="{Binding PostDate, Converter={StaticResource DateConvert}}"
+                                                   FontSize="10"
+                                                   TextColor="Gray" />
+                                        </VerticalStackLayout>
+                                    </HorizontalStackLayout>
+
+                                    <ContentView Grid.Column="1" />
+
+                                    <HorizontalStackLayout Grid.Column="2" Spacing="5" HorizontalOptions="End" VerticalOptions="Center">
+                                        <Button Text="Delete"
+                                                TextColor="White"
+                                                BackgroundColor="Red"
+                                                IsVisible="{Binding SameUser}"
+                                                Command="{Binding BindingContext.PostDeleteCommand, Source={x:Reference Name=HomePage}}"
+                                                CommandParameter="{Binding .}"/>
+                                        <Button Text="Update"
+                                                TextColor="White"
+                                                BackgroundColor="Blue"
+                                                IsVisible="{Binding SameUser}"
+                                                Command="{Binding BindingContext.goToUpdate, Source={x:Reference Name=HomePage}}"
+                                                CommandParameter="{Binding .}"/>
+                                    </HorizontalStackLayout>
+                                </Grid>
 
                                 <!-- Post Text -->
                                 <Label Text="{Binding Caption}" 

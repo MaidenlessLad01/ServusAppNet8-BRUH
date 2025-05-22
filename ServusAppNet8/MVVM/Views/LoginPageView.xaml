@@ -3,13 +3,24 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:ServusAppNet8.MVVM.ViewModels"
              xmlns:drawables="clr-namespace:ServusApp.Drawables"
+             xmlns:converters="clr-namespace:ServusAppNet8.Converter"
              x:Class="ServusAppNet8.MVVM.Views.LoginPageView"
              NavigationPage.HasNavigationBar="False"
               Shell.NavBarIsVisible="False"
              Title="LoginPageView">
+
+    <!--Binding Context-->
     <ContentPage.BindingContext>
         <local:UserViewModel/>
     </ContentPage.BindingContext>
+
+    <!--The converter to be used-->
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:ShowPasswordConverter x:Key="ShowPasswordConvert" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    
     <Grid>
         <!--Background Gradient-->
         <Grid.Background>
@@ -42,12 +53,13 @@
                 <FontImageSource FontFamily="icon" Glyph="&#xe800;" Size="30" Color="Gray"/>
             </ImageButton.Source>
         </ImageButton>
+        
         <!--Buttons/Entries/Labels for login-->
         <VerticalStackLayout 
-          Grid.Row="2"
-         VerticalOptions="Start"
-         Spacing="20"
-         Margin="20,90,20,0">
+                          Grid.Row="2"
+                         VerticalOptions="Start"
+                         Spacing="20"
+                         Margin="20,70,20,0">
             <Border BackgroundColor="#33FFA500" StrokeThickness="0" Padding="10">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="18"/>
@@ -56,18 +68,57 @@
                        Text="{Binding EmailOrPhone}" FontSize="15" ClearButtonVisibility="WhileEditing" TextColor="Black"/>
             </Border>
 
-            <Border BackgroundColor="#33FFA500" StrokeThickness="0" Padding="10">
+            <!--Entry for Password-->
+            <Border BackgroundColor="#33FFA500" 
+                    StrokeThickness="0" 
+                    Padding="10">
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="18"/>
                 </Border.StrokeShape>
-                <Entry Placeholder="Password" Text="{Binding Password}" IsPassword="True" ClearButtonVisibility="WhileEditing" FontSize="15" TextColor="Black"/>
+                <Entry Placeholder="Password" 
+                       Text="{Binding Password}"
+                       IsPassword="{Binding IsPasswordVisible, Converter={StaticResource ShowPasswordConvert}}"
+                       ClearButtonVisibility="WhileEditing"
+                       FontSize="15" 
+                       TextColor="Black"/>
             </Border>
 
-            <Label Text="Forgot Password?" Margin="0,-15,0,0" TextColor="OrangeRed" FontAttributes="Bold" HorizontalTextAlignment="End"/>
+            <!--Checkbox to show password visibility-->
+            <HorizontalStackLayout HorizontalOptions="End"
+                                   Spacing="5">
+                <CheckBox IsChecked="{Binding IsPasswordVisible}"
+                          BackgroundColor="OrangeRed"
+                          HeightRequest="16"
+                          WidthRequest="16"
+                          VerticalOptions="Center"/>
+                <Label Text="Show Password" 
+                       FontSize="12" 
+                       VerticalOptions="Center" 
+                       TextColor="OrangeRed" 
+                       FontAttributes="Bold" 
+                       HorizontalTextAlignment="End">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding TogglePasswordVisibilityCommand}"/>
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
 
-            <Button x:Name="LoginButton" Text="Login" Command="{Binding LoginButton}" Margin="0,10,0,-10" TextColor="White" BackgroundColor="OrangeRed"></Button>
+
+            <Button x:Name="LoginButton" 
+                    Text="Login" 
+                    Command="{Binding LoginButton}" 
+                    Margin="0,10,0,-10" 
+                    TextColor="White"
+                    BackgroundColor="OrangeRed" />
             <Label Text="or" HorizontalOptions="Center" TextColor="Gray"/>
-            <Button x:Name="SignUpButton" Text="Sign Up" Margin="0,-10,0,0" Command="{Binding gotoReg}" BorderColor="Black" BorderWidth="1" BackgroundColor="#00F0F8FF"></Button>
+            <Button x:Name="SignUpButton" 
+                    Text="Sign Up" 
+                    Margin="0,-10,0,0" 
+                    Command="{Binding gotoReg}" 
+                    BorderColor="Black" 
+                    TextColor="Black"
+                    BorderWidth="1" 
+                    BackgroundColor="#00F0F8FF"/>
         </VerticalStackLayout>
     </Grid>
 </ContentPage>

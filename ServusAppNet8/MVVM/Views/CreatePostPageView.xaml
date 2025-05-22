@@ -2,9 +2,11 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:ServusAppNet8.MVVM.ViewModels"
-             xmlns:converters="clr-namespace:ServusAppNet8.Converter" 
+             xmlns:converters="clr-namespace:ServusAppNet8.Converter"
              x:Class="ServusAppNet8.MVVM.Views.CreatePostPageView"
-             Title="Create New Post">
+             Title="Create New Post"
+             NavigationPage.HasNavigationBar="False"> 
+    
     <ContentPage.BindingContext>
         <local:PostViewModel/>
     </ContentPage.BindingContext>
@@ -14,37 +16,97 @@
     </ContentPage.Resources>
 
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15">
-            <ImageButton x:Name="BackButton" Margin="20,20,0,0" WidthRequest="25"
-                         HeightRequest="25" HorizontalOptions="Start"
-                         Command="{Binding gotoLanding}" VerticalOptions="Center">
-                <ImageButton.Source>
-                    <FontImageSource FontFamily="icon"
-                                     Glyph="&#xe800;"
-                                     Size="30"
-                                     Color="Gray"/>
-                </ImageButton.Source>
-            </ImageButton>
+        <VerticalStackLayout Spacing="0" Padding="0">
 
-            <Entry Text="{Binding Caption}"
-                   x:Name="TitleEntry"
-                   Placeholder="Enter your caption here" />
-            <Label Text="Selected Photo Preview" FontAttributes="Bold" Margin="0,10,0,0"/>
-            <Label Text="{Binding Picture}" FontSize="Small" TextColor="Red" />
-            <Image Source="{Binding Picture}"
-                   x:Name="SelectedImage"
-                   HeightRequest="200"
-                   Aspect="AspectFit" BackgroundColor="LightGray"
-                   HorizontalOptions="FillAndExpand"
-                   IsVisible="{Binding Picture, Converter={StaticResource NullOrEmptyBoolConverter}}" />
-            <Button Text="Add Photo" Command="{Binding PickImageCommand}" />
+            <!--For aesthetic purposes only-->
+            <Grid Padding="10" ColumnSpacing="20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
 
-            <Button Text="Create Post"
-                    BackgroundColor="DarkBlue"
-                    TextColor="White"
-                    FontAttributes="Bold"
-                    Command="{Binding PostUploadCommand}"
-                    IsEnabled="{Binding IsPostingEnabled}"/>
+                <!--Arrow to go to home page-->
+                <ImageButton Grid.Column="0" WidthRequest="30" HeightRequest="30" HorizontalOptions="Center"
+                             Command="{Binding gotoLanding}">
+                    <ImageButton.Source>
+                        <FontImageSource FontFamily="icon" Glyph="&#xe800;" Size="30" Color="Gray"/>
+                    </ImageButton.Source>
+                </ImageButton>
+
+                <!--For aesthetic purposes only-->
+                <Image Source="addfriend.png" Grid.Column="1" WidthRequest="30" HeightRequest="30" HorizontalOptions="Center" />
+                <Grid Grid.Column="2">
+                    <Image Source="video.png" WidthRequest="30" HeightRequest="30" HorizontalOptions="Center" />
+                    <Frame BackgroundColor="Red"
+                       Padding="2" CornerRadius="10" HeightRequest="20" WidthRequest="20"
+                       IsClippedToBounds="True" TranslationX="10" TranslationY="-5" HasShadow="False"
+                       HorizontalOptions="End" VerticalOptions="Start">
+                        <Label Text="10" FontSize="10" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Frame>
+                </Grid>
+                <Image Source="bell.png" Grid.Column="3" WidthRequest="30" HeightRequest="30" HorizontalOptions="Center" />
+                <Image Source="market.png" Grid.Column="4" WidthRequest="30" HeightRequest="30" HorizontalOptions="Center" />
+            </Grid>
+
+            <!--For aesthetic purposes only-->
+            <Grid BackgroundColor="White" Padding="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Image Source="facebook_logo.png" HeightRequest="30" Grid.Column="0" />
+
+                <HorizontalStackLayout Spacing="10" Grid.Column="2">
+                    <Image Source="icon_home.png" HeightRequest="25" />
+                    <Image Source="icon_people.png" HeightRequest="25" />
+                    <Image Source="icon_message.png" HeightRequest="25" />
+                    <Image Source="icon_notifications.png" HeightRequest="25" />
+                </HorizontalStackLayout>
+            </Grid>
+
+            <!--Where you can create and upload post-->
+            <VerticalStackLayout Padding="20" Spacing="15">
+                <!--Entry for post title-->
+                <Entry Text="{Binding Caption}"
+                       x:Name="TitleEntry"
+                       Placeholder="Enter your caption here" />
+
+                <!--The image-->
+                <Label Text="Selected Photo Preview" FontAttributes="Bold" Margin="0,10,0,0"/>
+                <Image Source="{Binding Picture}"
+                       x:Name="SelectedImage"
+                       HeightRequest="200"
+                       Aspect="AspectFit"
+                       BackgroundColor="LightGray"
+                       IsVisible="{Binding Picture, Converter={StaticResource NullOrEmptyBoolConverter}}" />
+
+                <!--Button for adding a photo-->
+                <Button Text="Add Photo"
+                        Command="{Binding PickImageCommand}"
+                        BackgroundColor="#E4E6EB"
+                        TextColor="Black"
+                        CornerRadius="5"/>
+                
+                <!--Button for removing the photo-->
+                <Button Text="Remove Photo"
+                        Command="{Binding RemovePhotoCommand}"
+                        TextColor="Red"
+                        BackgroundColor="#E4E6EB"
+                        CornerRadius="5"/>
+
+                <Button Text="Create Post"
+                        BackgroundColor="#1877F2" TextColor="White"
+                        FontAttributes="Bold"
+                        CornerRadius="5"
+                        Command="{Binding PostUploadCommand}"/>
+            </VerticalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

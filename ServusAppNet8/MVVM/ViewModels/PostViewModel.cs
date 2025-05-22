@@ -86,6 +86,8 @@ namespace ServusAppNet8.MVVM.ViewModels
 
         public ICommand goToUpdate => new Command<PostUser>((post) => NavToUpdate(post));
 
+        public ICommand RemovePhotoCommand => new Command(() => Picture = null);
+
         #endregion
 
         public PostViewModel()
@@ -105,16 +107,6 @@ namespace ServusAppNet8.MVVM.ViewModels
             PostUpdateCommand = new Command(async () => await PostUpdate());
             GetPosts();
         }
-
-        // If you are using Dependency Injection, your constructor would look like this:
-        // public PostViewModel(CloudinaryDotNet.Cloudinary cloudinary)
-        // {
-        //     _httpClient = new HttpClient();
-        //     _cloudinary = cloudinary;
-        //     PostDeleteCommand = new Command<PostUser>(PostDelete);
-        //     PostUpdateCommand = new Command<PostUser>(PostUpdate);
-        //     GetPosts();
-        // }
 
         private async void GetPosts()
         {
@@ -191,7 +183,7 @@ namespace ServusAppNet8.MVVM.ViewModels
                 try
                 {
                     // The Picture property is already set to the Cloudinary URL by PickImage()
-                    // So we just assign it directly to newPost.Picture
+                    // Assign it directly to newPost.Picture
                     newPost.Picture = Picture;
                 }
                 catch (Exception ex)
@@ -269,9 +261,6 @@ namespace ServusAppNet8.MVVM.ViewModels
             var uploadParams = new ImageUploadParams()
             {
                 File = new FileDescription(fileName, imageStream),
-                // Optional: You can specify a folder, public_id, transformations, etc.
-                // Folder = "social_media_posts",
-                // PublicId = $"post_{Guid.NewGuid().ToString()}"
             };
 
             var uploadResult = await _cloudinary.UploadAsync(uploadParams);
@@ -302,29 +291,25 @@ namespace ServusAppNet8.MVVM.ViewModels
             }
         }
 
-        // Helper to extract public ID from Cloudinary URL for deletion
-        private string GetPublicIdFromCloudinaryUrl(string url)
-        {
-            // Example: "https://res.cloudinary.com/your_cloud_name/image/upload/v1234567890/folder/public_id.jpg"
-            // We need to extract "folder/public_id"
-            var uri = new Uri(url);
-            var path = uri.Segments.Last(); // Gets "public_id.jpg"
-            var parts = path.Split('.');
-            if (parts.Length > 0)
-            {
-                return parts[0]; // Returns "public_id"
-            }
-            return null;
-        }
-
-
         //Updates the post
         private async Task PostUpdate()
         {
+            //Checks if the caption and picture is empty
+            if (string.IsNullOrWhiteSpace(Caption) && string.IsNullOrWhiteSpace(Picture))
+            {
+                await Application.Current.MainPage.DisplayAlert("Error", "Post must not be empty", "OK");
+                return;
+            }
+
+            //Get the current user's Id to update Post
+            var userId = Preferences.Get("UserId", string.Empty);
+
             var postChanges = new Post
             {
                 Picture = Picture,
-                Caption = Caption
+                Caption = Caption,
+                UserId = userId,
+                PostDate = DateTime.Now
             };
 
             var json = JsonSerializer.Serialize(postChanges);
@@ -334,16 +319,13 @@ namespace ServusAppNet8.MVVM.ViewModels
 
             if (res.IsSuccessStatusCode)
             {
-                ////Gets the posts from the api before the notification
-                //GetPosts();
-                //await Application.Current.MainPage.DisplayAlert("Success", "Post updated.", "OK");
-                //Application.Current.MainPage = App.Services.GetRequiredService<Home>();
-
-                // Update the PostUser object in the collection
+                //Update the PostUser object in the collection
                 if (_postToUpdate != null)
                 {
-                    _postToUpdate.Picture = Picture; // Update properties directly
+                    // Update properties directly
+                    _postToUpdate.Picture = Picture; 
                     _postToUpdate.Caption = Caption;
+                    _postToUpdate.PostDate = DateTime.Now;
 
                     // Notify the UI that the collection has changed (if necessary)
                     OnPropertyChanged(nameof(PostWithUser)); // If PostWithUser is bound to the UI
@@ -351,7 +333,7 @@ namespace ServusAppNet8.MVVM.ViewModels
 
                 await Application.Current.MainPage.DisplayAlert("Success", "Post updated.", "OK");
 
-                // Navigate back to the Home page (if needed)
+                //Gets the posts from the api before going to the homepage
                 Application.Current.MainPage = App.Services.GetRequiredService<Home>();
             }
             else
@@ -363,7 +345,7 @@ namespace ServusAppNet8.MVVM.ViewModels
         //Goes to update page with the post id
         private async void NavToUpdate(PostUser post)
         {
-            postId = post.PostId;
+            postId = post.PostId; //To update the post
             Picture = post.Picture;
             Caption = post.Caption;
 
