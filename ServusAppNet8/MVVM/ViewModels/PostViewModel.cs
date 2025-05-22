@@ -88,8 +88,8 @@ namespace ServusAppNet8.MVVM.ViewModels
             _httpClient = new HttpClient();
 
             PostDeleteCommand = new Command<PostUser>(PostDelete);
-            PostUpdateCommand = new Command<PostUser>(PostUpdate);
-
+            //PostUpdateCommand = new Command<PostUser>(PostUpdate);
+            PostUpdateCommand = new Command(async () => await PostUpdate());
             GetPosts();
         }
 
@@ -241,7 +241,7 @@ namespace ServusAppNet8.MVVM.ViewModels
         }
 
         //Updates the post
-        private async void PostUpdate()
+        private async Task PostUpdate()
         {
             var postChanges = new Post
             {
