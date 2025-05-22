@@ -150,9 +150,6 @@
 
                                 <!-- Header: Profile Image + Name + Time -->
                                 <HorizontalStackLayout Spacing="10">
-                                    <Frame CornerRadius="20" WidthRequest="40" HeightRequest="40" Padding="0" HasShadow="False">
-                                        <Image Source="{Binding ProfileImage}" Aspect="AspectFill" />
-                                    </Frame>
                                     <VerticalStackLayout>
                                         <Label Text="{Binding UserName}" FontAttributes="Bold" FontSize="14" />
                                         <Label Text="{Binding PostDate, Converter={StaticResource DateConvert}}" 
